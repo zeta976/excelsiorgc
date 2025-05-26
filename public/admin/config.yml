@@ -1,8 +1,10 @@
 backend:
   name: git-gateway
   branch: main
+
 media_folder: "public/uploads"
-publish_mode: editorial_workflow
+public_folder: "/uploads"
+
 collections:
   - name: "articles"
     label: "Articles"
@@ -11,9 +13,4 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}
-      - {label: "Author", name: "author", widget: "string"}
-      - {label: "Date", name: "date", widget: "datetime"}
-      - {label: "Section", name: "section", widget: "select", options: ["Opinion", "Humor", "Sports", "News"]}
-      - {label: "Tags", name: "tags", widget: "list"}
-      - {label: "Featured Image", name: "featured_image", widget: "image"}
       - {label: "Body", name: "body", widget: "markdown"}
