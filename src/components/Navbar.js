@@ -42,7 +42,14 @@ export default function Navbar({ sections }) {
         </div>
         {/* Centered Logo */}
         <Link href="/" className="flex items-center justify-center w-full">
-          <Image src="/excelsior.png" alt="Excelsior Newspaper Logo" width={800} height={800} className="rounded object-contain max-h-[120px] max-w-[340px] mx-auto" priority />
+          <Image 
+  src="/excelsior.png"
+  alt="Excelsior Newspaper Logo"
+  width={800}
+  height={800}
+  className="rounded object-contain max-h-[100px] max-w-[200px] sm:max-h-[140px] sm:max-w-[320px] md:max-h-[180px] md:max-w-[480px] lg:max-h-[220px] lg:max-w-[600px] mx-auto"
+  priority
+/>
         </Link>
         {/* Section Links */}
         <div className="w-full flex flex-wrap justify-center gap-6 mt-4">
