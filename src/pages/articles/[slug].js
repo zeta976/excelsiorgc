@@ -37,25 +37,28 @@ export async function getStaticProps({ params }) {
 export default function ArticlePage({ frontmatter, contentHtml }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-2">{frontmatter.title}</h1>
-      <div className="text-gray-500 text-sm mb-4">
+      <div className="border-t border-neutral-200 mb-8"></div>
+      {frontmatter.section && (
+        <div className="mb-2">
+          <span className="uppercase tracking-wide font-bold text-primary mr-2 text-sm">{frontmatter.section}</span>
+        </div>
+      )}
+      <h1 className="text-4xl font-serif font-black mb-2 tracking-tight text-neutral-900">{frontmatter.title}</h1>
+      <div className="text-neutral-500 text-sm mb-4">
         {frontmatter.author && <span>By {frontmatter.author} | </span>}
         {frontmatter.date && <span>{new Date(frontmatter.date).toLocaleDateString()}</span>}
       </div>
-      {frontmatter.section && (
-        <div className="mb-2"><span className="bg-blue-200 px-2 py-1 rounded text-xs font-semibold">{frontmatter.section}</span></div>
-      )}
       {frontmatter.tags && (
         <div className="mb-4">
           {frontmatter.tags.map(tag => (
-            <span key={tag} className="inline-block bg-gray-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
+            <span key={tag} className="inline-block bg-neutral-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
           ))}
         </div>
       )}
       {frontmatter.featured_image && (
         <img src={frontmatter.featured_image} alt="Featured" className="mb-6 rounded shadow" />
       )}
-      <article className="prose max-w-none" dangerouslySetInnerHTML={{ __html: contentHtml }} />
+      <article className="prose max-w-none text-neutral-900" dangerouslySetInnerHTML={{ __html: contentHtml }} />
     </main>
   );
 }

@@ -60,25 +60,26 @@ export async function getStaticProps({ params }) {
 export default function SectionPage({ section, articles }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 capitalize">{section} Articles</h1>
+      <h1 className="text-4xl font-serif font-black mb-8 tracking-tight text-neutral-900 capitalize">{section} Articles</h1>
       <ul>
         {articles.map(article => (
-          <li key={article.slug} className="mb-8 border-b pb-6">
+          <li key={article.slug} className="mb-10 border-b border-neutral-200 pb-8">
             <Link href={`/articles/${article.slug}`}
-              className="text-2xl font-semibold text-blue-700 hover:underline">
+              className="text-2xl font-serif font-extrabold text-neutral-900 hover:text-primary transition-colors">
               {article.title}
             </Link>
-            <div className="text-gray-500 text-sm mb-2">
+            <div className="text-neutral-500 text-sm mb-2 mt-1">
+              {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
               {article.author && <span>By {article.author} | </span>}
               {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
             </div>
-            <div className="mb-2 text-gray-700 text-sm">
+            <div className="mb-2 text-neutral-800 text-base prose max-w-none">
               {article.excerpt}
             </div>
             {article.tags && article.tags.length > 0 && (
               <div className="mb-2">
                 {article.tags.map(tag => (
-                  <span key={tag} className="inline-block bg-gray-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
+                  <span key={tag} className="inline-block bg-neutral-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
                 ))}
               </div>
             )}
