@@ -3,7 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
 import Image from 'next/image';
-import AdSlot from '../../components/AdSlot';
+import AdSlot from '../components/AdSlot';
 import { remark } from 'remark';
 import html from 'remark-html';
 
