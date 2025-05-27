@@ -100,7 +100,14 @@ export default function Home({ articles, sections }) {
                 {articles[1].author && <span>By {articles[1].author} | </span>}
                 {articles[1].date && <span>{new Date(articles[1].date).toLocaleDateString()}</span>}
               </div>
-              <div className="mb-1 text-neutral-800 text-sm prose max-w-none" dangerouslySetInnerHTML={{ __html: articles[1].excerptHtml }} />
+              <div className="mb-1 text-neutral-800 text-sm prose max-w-none">
+                {(() => {
+                  // Strip HTML tags and limit to 50 words
+                  const plainText = articles[1].excerptHtml.replace(/<[^>]+>/g, '');
+                  const words = plainText.split(/\s+/).slice(0, 50).join(' ');
+                  return words + (plainText.split(/\s+/).length > 50 ? '…' : '');
+                })()}
+              </div>
             </div>
           )}
           {articles[2] && (
@@ -116,7 +123,14 @@ export default function Home({ articles, sections }) {
                 {articles[2].author && <span>By {articles[2].author} | </span>}
                 {articles[2].date && <span>{new Date(articles[2].date).toLocaleDateString()}</span>}
               </div>
-              <div className="mb-1 text-neutral-800 text-sm prose max-w-none" dangerouslySetInnerHTML={{ __html: articles[2].excerptHtml }} />
+              <div className="mb-1 text-neutral-800 text-sm prose max-w-none">
+                {(() => {
+                  // Strip HTML tags and limit to 50 words
+                  const plainText = articles[2].excerptHtml.replace(/<[^>]+>/g, '');
+                  const words = plainText.split(/\s+/).slice(0, 50).join(' ');
+                  return words + (plainText.split(/\s+/).length > 50 ? '…' : '');
+                })()}
+              </div>
             </div>
           )}
         </div>  
