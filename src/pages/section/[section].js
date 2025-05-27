@@ -43,8 +43,17 @@ export async function getStaticProps({ params }) {
         if (data.date && typeof data.date !== 'string') {
           data.date = String(data.date);
         }
-        // Get first paragraph or first 200 chars for excerpt
-        let excerptMd = content.split(/\n\s*\n/)[0];
+        // Get first non-heading, non-empty, non-comment paragraph as excerpt
+        let excerptMd = '';
+        const paragraphs = content.split(/\n\s*\n/);
+        for (let p of paragraphs) {
+          const trimmed = p.trim();
+          if (!trimmed) continue;
+          if (trimmed.startsWith('#')) continue; // skip headings
+          if (trimmed.startsWith('<!--')) continue; // skip comments
+          excerptMd = trimmed;
+          break;
+        }
         if (!excerptMd) excerptMd = content.substr(0, 200);
         const processedExcerpt = await remark().use(html).process(excerptMd);
         const excerptHtml = processedExcerpt.toString();
