@@ -54,29 +54,33 @@ export default function ArticlesIndex({ articles }) {
     <main className="max-w-3xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-serif font-black mb-8 tracking-tight text-neutral-900">All Articles</h1>
       <ul>
-        {articles.map(article => (
-          <li key={article.slug} className="mb-10 border-b border-neutral-200 pb-8">
-            <Link href={`/articles/${article.slug}`}
-              className="text-2xl font-serif font-extrabold text-neutral-900 hover:text-primary transition-colors">
-              {article.title}
-            </Link>
-            <div className="text-neutral-500 text-sm mb-2 mt-1">
-              {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
-              {article.author && <span>By {article.author} | </span>}
-              {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
-            </div>
-            <div className="mb-2 text-neutral-800 text-base prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
-            {article.tags && article.tags.length > 0 && (
-              <div className="mb-2">
-                {article.tags.map(tag => (
-                  <span key={tag} className="inline-block bg-neutral-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
-                ))}
+        {articles.map((article, idx) => (
+          <React.Fragment key={article.slug}>
+            <li className="mb-10 border-b border-neutral-200 pb-8">
+              <Link href={`/articles/${article.slug}`} className="text-2xl font-serif font-extrabold text-neutral-900 hover:text-primary transition-colors">
+                {article.title}
+              </Link>
+              <div className="text-neutral-500 text-sm mb-2 mt-1">
+                {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
+                {article.author && <span>By {article.author} | </span>}
+                {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
               </div>
+              {article.tags && article.tags.length > 0 && (
+                <div className="mb-2">
+                  {article.tags.map(tag => (
+                    <span key={tag} className="inline-block bg-neutral-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
+                  ))}
+                </div>
+              )}
+              {article.featured_image && (
+                <img src={article.featured_image} alt="Featured" className="mb-2 rounded shadow max-h-48" />
+              )}
+              <div className="mb-2 text-neutral-800 text-base prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
+            </li>
+            {idx === 0 && (
+              <li className="my-8"><AdSlot position="article-inline" /></li>
             )}
-            {article.featured_image && (
-              <img src={article.featured_image} alt="Featured" className="mb-2 rounded shadow max-h-48" />
-            )}
-          </li>
+          </React.Fragment>
         ))}
       </ul>
     </main>

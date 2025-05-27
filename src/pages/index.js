@@ -82,6 +82,10 @@ export default function Home({ articles, sections }) {
             )}
           </div>
         )}
+        {/* Homepage Banner Ad */}
+        <div className="md:col-span-12">
+          <AdSlot position="homepage-banner" />
+        </div>
         {/* Next two articles in a column */}
         <div className="md:col-span-5 flex flex-col gap-8">
           {articles.slice(1, 3).map(article => (

@@ -70,7 +70,7 @@ export async function getStaticProps({ params }) {
   return {
     props: {
       section: sectionName,
-      articles,
+      articles: filteredArticles,
     },
   };
 }
@@ -78,7 +78,10 @@ export async function getStaticProps({ params }) {
 export default function SectionPage({ section, articles }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-serif font-black mb-8 tracking-tight text-neutral-900 capitalize">{section} Articles</h1>
+      <div className="mb-8">
+        <AdSlot position="section-banner" />
+      </div>
+      <h2 className="text-2xl font-serif font-bold mb-6 text-neutral-900 capitalize">{section} Articles</h2>
       <ul>
         {articles.map(article => (
           <li key={article.slug} className="mb-10 border-b border-neutral-200 pb-8">
