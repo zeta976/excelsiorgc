@@ -61,21 +61,21 @@ export default function Home({ articles, sections }) {
       <div className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-2 md:gap-8 gap-10">
         {/* Featured (first) article */}
         {articles[0] && (
-          <div className="md:col-span-7 md:row-span-2 border-b border-neutral-300 pb-6 mb-6 md:mb-0 md:pb-0 md:border-b-0 md:border-r md:pr-8 flex flex-col justify-between">
+          <div className="md:col-span-7 border-b border-neutral-300 pb-4 mb-4 md:mb-0 md:pb-0 md:border-b-0 md:border-r md:pr-8">
             {articles[0].featured_image && (
-              <Image src={articles[0].featured_image} alt="Featured" className="w-full h-64 object-cover mb-4" width={900} height={320} style={{objectFit: 'cover'}} />
+              <Image src={articles[0].featured_image} alt="Featured" className="w-full h-64 object-cover mb-2" width={900} height={320} style={{objectFit: 'cover'}} />
             )}
-            <Link href={`/articles/${articles[0].slug}`} className="text-3xl font-serif font-black text-neutral-900 hover:text-primary transition-colors mb-2 block">
+            <Link href={`/articles/${articles[0].slug}`} className="text-3xl font-serif font-black text-neutral-900 hover:text-primary transition-colors mb-1 block">
               {articles[0].title}
             </Link>
-            <div className="text-neutral-500 text-sm mb-2 mt-1">
+            <div className="text-neutral-500 text-sm mb-1 mt-1">
               {articles[0].section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{articles[0].section}</span>}
               {articles[0].author && <span>By {articles[0].author} | </span>}
               {articles[0].date && <span>{new Date(articles[0].date).toLocaleDateString()}</span>}
             </div>
-            <div className="mb-2 text-neutral-800 text-base prose max-w-none" dangerouslySetInnerHTML={{ __html: articles[0].excerptHtml }} />
+            <div className="mb-1 text-neutral-800 text-base prose max-w-none" dangerouslySetInnerHTML={{ __html: articles[0].excerptHtml }} />
             {articles[0].tags && articles[0].tags.length > 0 && (
-              <div className="mb-2">
+              <div className="mb-1">
                 {articles[0].tags.map(tag => (
                   <span key={tag} className="inline-block bg-neutral-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
                 ))}
