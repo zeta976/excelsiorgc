@@ -58,7 +58,8 @@ export async function getStaticProps() {
 export default function Home({ articles, sections }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-12 md:gap-8 gap-10 md:grid-flow-dense">
+      {/* Top row: featured + 2 right */}
+      <div className="grid grid-cols-1 md:grid-cols-12 md:gap-8 gap-10 mb-8">
         {/* Featured (first) article */}
         {articles[0] && (
           <div className="md:col-span-7 border-b border-neutral-300 pb-4 mb-4 md:mb-0 md:pb-0 md:border-b-0 md:border-r md:pr-8">
@@ -84,61 +85,65 @@ export default function Home({ articles, sections }) {
           </div>
         )}
         {/* Next two articles stacked on the right */}
-        {articles[1] && (
-          <div className="md:col-span-5 border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
-            {articles[1].featured_image && (
-              <Image src={articles[1].featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" width={600} height={128} style={{objectFit: 'cover'}} />
-            )}
-            <Link href={`/articles/${articles[1].slug}`} className="text-xl font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
-              {articles[1].title}
-            </Link>
-            <div className="text-neutral-500 text-xs mb-1 mt-0.5">
-              {articles[1].section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{articles[1].section}</span>}
-              {articles[1].author && <span>By {articles[1].author} | </span>}
-              {articles[1].date && <span>{new Date(articles[1].date).toLocaleDateString()}</span>}
+        {/* Right column: next two articles stacked */}
+        <div className="md:col-span-5 flex flex-col gap-4 border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
+          {articles[1] && (
+            <div>
+              {articles[1].featured_image && (
+                <Image src={articles[1].featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" width={600} height={128} style={{objectFit: 'cover'}} />
+              )}
+              <Link href={`/articles/${articles[1].slug}`} className="text-xl font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
+                {articles[1].title}
+              </Link>
+              <div className="text-neutral-500 text-xs mb-1 mt-0.5">
+                {articles[1].section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{articles[1].section}</span>}
+                {articles[1].author && <span>By {articles[1].author} | </span>}
+                {articles[1].date && <span>{new Date(articles[1].date).toLocaleDateString()}</span>}
+              </div>
+              <div className="mb-1 text-neutral-800 text-sm prose max-w-none" dangerouslySetInnerHTML={{ __html: articles[1].excerptHtml }} />
             </div>
-            <div className="mb-1 text-neutral-800 text-sm prose max-w-none" dangerouslySetInnerHTML={{ __html: articles[1].excerptHtml }} />
-          </div>
-        )}
-        {articles[2] && (
-          <div className="md:col-span-5 border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
-            {articles[2].featured_image && (
-              <Image src={articles[2].featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" width={600} height={128} style={{objectFit: 'cover'}} />
-            )}
-            <Link href={`/articles/${articles[2].slug}`} className="text-xl font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
-              {articles[2].title}
-            </Link>
-            <div className="text-neutral-500 text-xs mb-1 mt-0.5">
-              {articles[2].section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{articles[2].section}</span>}
-              {articles[2].author && <span>By {articles[2].author} | </span>}
-              {articles[2].date && <span>{new Date(articles[2].date).toLocaleDateString()}</span>}
+          )}
+          {articles[2] && (
+            <div>
+              {articles[2].featured_image && (
+                <Image src={articles[2].featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" width={600} height={128} style={{objectFit: 'cover'}} />
+              )}
+              <Link href={`/articles/${articles[2].slug}`} className="text-xl font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
+                {articles[2].title}
+              </Link>
+              <div className="text-neutral-500 text-xs mb-1 mt-0.5">
+                {articles[2].section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{articles[2].section}</span>}
+                {articles[2].author && <span>By {articles[2].author} | </span>}
+                {articles[2].date && <span>{new Date(articles[2].date).toLocaleDateString()}</span>}
+              </div>
+              <div className="mb-1 text-neutral-800 text-sm prose max-w-none" dangerouslySetInnerHTML={{ __html: articles[2].excerptHtml }} />
             </div>
-            <div className="mb-1 text-neutral-800 text-sm prose max-w-none" dangerouslySetInnerHTML={{ __html: articles[2].excerptHtml }} />
-          </div>
-        )}
+          )}
+        </div>  
+
         {/* Homepage Banner Ad */}
         <div className="md:col-span-12">
           <AdSlot position="homepage-banner" />
         </div>
-        {/* Remaining articles in a row (or stacked on mobile) */}
-        <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 border-t border-neutral-300 pt-8">
-          {articles.slice(3).map(article => (
-            <div key={article.slug} className="">
-              {article.featured_image && (
-                <Image src={article.featured_image} alt="Featured" className="w-full h-24 object-cover mb-2" width={600} height={96} style={{objectFit: 'cover'}} />
-              )}
-              <Link href={`/articles/${article.slug}`} className="text-lg font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
-                {article.title}
-              </Link>
-              <div className="text-neutral-500 text-xs mb-1 mt-0.5">
-                {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
-                {article.author && <span>By {article.author} | </span>}
-                {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
-              </div>
-              <div className="mb-1 text-neutral-800 text-xs prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
+      </div>
+      {/* Lower grid for remaining articles */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-neutral-300 pt-8">
+        {articles.slice(3).map(article => (
+          <div key={article.slug} className="">
+            {article.featured_image && (
+              <Image src={article.featured_image} alt="Featured" className="w-full h-24 object-cover mb-2" width={600} height={96} style={{objectFit: 'cover'}} />
+            )}
+            <Link href={`/articles/${article.slug}`} className="text-lg font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
+              {article.title}
+            </Link>
+            <div className="text-neutral-500 text-xs mb-1 mt-0.5">
+              {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
+              {article.author && <span>By {article.author} | </span>}
+              {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
             </div>
-          ))}
-        </div>
+            <div className="mb-1 text-neutral-800 text-xs prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
+          </div>
+        ))}
       </div>
     </main>
   );
