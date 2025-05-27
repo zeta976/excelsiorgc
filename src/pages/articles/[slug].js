@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import Image from 'next/image';
 
 export async function getStaticPaths() {
   const articlesDir = path.join(process.cwd(), 'src', 'content', 'articles');
@@ -56,7 +57,7 @@ export default function ArticlePage({ frontmatter, contentHtml }) {
         </div>
       )}
       {frontmatter.featured_image && (
-        <img src={frontmatter.featured_image} alt="Featured" className="mb-6 rounded shadow" />
+        <Image src={frontmatter.featured_image} alt="Featured" className="mb-6 rounded shadow" />
       )}
       <article className="prose max-w-none text-neutral-900" dangerouslySetInnerHTML={{ __html: contentHtml }} />
     </main>

@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
+import Image from 'next/image';
+import AdSlot from '../../components/AdSlot';
 import { remark } from 'remark';
 import html from 'remark-html';
 
@@ -103,7 +105,7 @@ export default function SectionPage({ section, articles }) {
               </div>
             )}
             {article.featured_image && (
-              <img src={article.featured_image} alt="Featured" className="mb-2 rounded shadow max-h-48" />
+              <Image src={article.featured_image} alt="Featured" className="w-full h-24 object-cover mb-2" width={600} height={96} style={{objectFit: 'cover'}} />
             )}
           </li>
         ))}

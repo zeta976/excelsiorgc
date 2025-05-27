@@ -1,7 +1,10 @@
+import React from 'react';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
+import Image from 'next/image';
+import AdSlot from '../../components/AdSlot';
 import { remark } from 'remark';
 import html from 'remark-html';
 
@@ -73,7 +76,7 @@ export default function ArticlesIndex({ articles }) {
                 </div>
               )}
               {article.featured_image && (
-                <img src={article.featured_image} alt="Featured" className="mb-2 rounded shadow max-h-48" />
+                <Image src={article.featured_image} alt="Featured" className="mb-2 rounded shadow max-h-48" width={600} height={250} style={{objectFit: 'cover'}} />
               )}
               <div className="mb-2 text-neutral-800 text-base prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
             </li>

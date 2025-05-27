@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
+import Image from 'next/image';
+import AdSlot from '../../components/AdSlot';
 import { remark } from 'remark';
 import html from 'remark-html';
 
@@ -61,7 +63,7 @@ export default function Home({ articles, sections }) {
         {articles[0] && (
           <div className="md:col-span-7 border-b border-neutral-300 pb-6 mb-6 md:mb-0 md:pb-0 md:border-b-0 md:border-r md:pr-8">
             {articles[0].featured_image && (
-              <img src={articles[0].featured_image} alt="Featured" className="w-full h-64 object-cover mb-4" />
+              <Image src={articles[0].featured_image} alt="Featured" className="w-full h-64 object-cover mb-4" width={900} height={320} style={{objectFit: 'cover'}} />
             )}
             <Link href={`/articles/${articles[0].slug}`}
               className="text-3xl font-serif font-black text-neutral-900 hover:text-primary transition-colors mb-2 block">
@@ -91,7 +93,7 @@ export default function Home({ articles, sections }) {
           {articles.slice(1, 3).map(article => (
             <div key={article.slug} className="border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
               {article.featured_image && (
-                <img src={article.featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" />
+                <Image src={article.featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" width={600} height={128} style={{objectFit: 'cover'}} />
               )}
               <Link href={`/articles/${article.slug}`}
                 className="text-xl font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
@@ -111,7 +113,7 @@ export default function Home({ articles, sections }) {
           {articles.slice(3).map(article => (
             <div key={article.slug} className="">
               {article.featured_image && (
-                <img src={article.featured_image} alt="Featured" className="w-full h-24 object-cover mb-2" />
+                <Image src={article.featured_image} alt="Featured" className="w-full h-24 object-cover mb-2" width={600} height={96} style={{objectFit: 'cover'}} />
               )}
               <Link href={`/articles/${article.slug}`}
                 className="text-lg font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
