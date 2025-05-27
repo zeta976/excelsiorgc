@@ -63,12 +63,12 @@ export default function Home({ articles, sections }) {
     <main className="max-w-3xl mx-auto px-4 py-8">
 
       <h2 className="text-2xl font-serif font-bold mb-6 text-neutral-900">Latest Articles</h2>
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+      <div className="md:grid md:grid-cols-12 md:gap-8 flex flex-col gap-10">
         {/* Featured (first) article */}
         {articles[0] && (
-          <div className="md:col-span-3 md:row-span-2 bg-white border border-neutral-200 rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="md:col-span-7 border-b border-neutral-300 pb-6 mb-6 md:mb-0 md:pb-0 md:border-b-0 md:border-r md:pr-8">
             {articles[0].featured_image && (
-              <img src={articles[0].featured_image} alt="Featured" className="w-full h-48 object-cover rounded mb-4" />
+              <img src={articles[0].featured_image} alt="Featured" className="w-full h-64 object-cover mb-4" />
             )}
             <Link href={`/articles/${articles[0].slug}`}
               className="text-3xl font-serif font-black text-neutral-900 hover:text-primary transition-colors mb-2 block">
@@ -89,42 +89,46 @@ export default function Home({ articles, sections }) {
             )}
           </div>
         )}
-        {/* Next two articles as medium cards */}
-        {articles.slice(1, 3).map(article => (
-          <div key={article.slug} className="md:col-span-3 bg-white border border-neutral-200 rounded-lg shadow-sm p-5 flex flex-col">
-            {article.featured_image && (
-              <img src={article.featured_image} alt="Featured" className="w-full h-32 object-cover rounded mb-3" />
-            )}
-            <Link href={`/articles/${article.slug}`}
-              className="text-xl font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
-              {article.title}
-            </Link>
-            <div className="text-neutral-500 text-xs mb-1 mt-0.5">
-              {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
-              {article.author && <span>By {article.author} | </span>}
-              {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
+        {/* Next two articles in a column */}
+        <div className="md:col-span-5 flex flex-col gap-8">
+          {articles.slice(1, 3).map(article => (
+            <div key={article.slug} className="border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
+              {article.featured_image && (
+                <img src={article.featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" />
+              )}
+              <Link href={`/articles/${article.slug}`}
+                className="text-xl font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
+                {article.title}
+              </Link>
+              <div className="text-neutral-500 text-xs mb-1 mt-0.5">
+                {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
+                {article.author && <span>By {article.author} | </span>}
+                {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
+              </div>
+              <div className="mb-1 text-neutral-800 text-sm prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
             </div>
-            <div className="mb-1 text-neutral-800 text-sm prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
-          </div>
-        ))}
-        {/* Remaining articles as small cards */}
-        {articles.slice(3).map(article => (
-          <div key={article.slug} className="md:col-span-2 bg-white border border-neutral-200 rounded-lg shadow-sm p-4 flex flex-col">
-            {article.featured_image && (
-              <img src={article.featured_image} alt="Featured" className="w-full h-24 object-cover rounded mb-2" />
-            )}
-            <Link href={`/articles/${article.slug}`}
-              className="text-lg font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
-              {article.title}
-            </Link>
-            <div className="text-neutral-500 text-xs mb-1 mt-0.5">
-              {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
-              {article.author && <span>By {article.author} | </span>}
-              {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
+          ))}
+        </div>
+        {/* Remaining articles in a row (or stacked on mobile) */}
+        <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 border-t border-neutral-300 pt-8">
+          {articles.slice(3).map(article => (
+            <div key={article.slug} className="">
+              {article.featured_image && (
+                <img src={article.featured_image} alt="Featured" className="w-full h-24 object-cover mb-2" />
+              )}
+              <Link href={`/articles/${article.slug}`}
+                className="text-lg font-serif font-bold text-neutral-900 hover:text-primary transition-colors mb-1 block">
+                {article.title}
+              </Link>
+              <div className="text-neutral-500 text-xs mb-1 mt-0.5">
+                {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
+                {article.author && <span>By {article.author} | </span>}
+                {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
+              </div>
+              <div className="mb-1 text-neutral-800 text-xs prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
             </div>
-            <div className="mb-1 text-neutral-800 text-xs prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </main>
   );
