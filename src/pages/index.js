@@ -58,7 +58,7 @@ export async function getStaticProps() {
 export default function Home({ articles, sections }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-12 md:grid-rows-2 md:gap-8 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-12 md:gap-8 gap-10 md:grid-flow-dense">
         {/* Featured (first) article */}
         {articles[0] && (
           <div className="md:col-span-7 border-b border-neutral-300 pb-4 mb-4 md:mb-0 md:pb-0 md:border-b-0 md:border-r md:pr-8">
@@ -85,7 +85,7 @@ export default function Home({ articles, sections }) {
         )}
         {/* Next two articles stacked on the right */}
         {articles[1] && (
-          <div className="md:col-start-8 md:col-end-13 md:row-start-1 md:row-end-2 border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
+          <div className="md:col-span-5 border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
             {articles[1].featured_image && (
               <Image src={articles[1].featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" width={600} height={128} style={{objectFit: 'cover'}} />
             )}
@@ -101,7 +101,7 @@ export default function Home({ articles, sections }) {
           </div>
         )}
         {articles[2] && (
-          <div className="md:col-start-8 md:col-end-13 md:row-start-2 md:row-end-3 border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
+          <div className="md:col-span-5 border-b md:border-b-0 md:border-l border-neutral-300 md:pl-8 pb-6 md:pb-0">
             {articles[2].featured_image && (
               <Image src={articles[2].featured_image} alt="Featured" className="w-full h-32 object-cover mb-3" width={600} height={128} style={{objectFit: 'cover'}} />
             )}
