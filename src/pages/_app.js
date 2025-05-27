@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import '../styles/globals.css';
 
 function getSections(pageProps) {
@@ -14,6 +15,7 @@ export default function App({ Component, pageProps }) {
     <>
       <Navbar sections={sections} />
       <Component {...pageProps} />
+      <Footer />
     </>
   );
 }
