@@ -31,12 +31,7 @@ export async function getStaticProps() {
           break;
         }
         if (!excerptMd) excerptMd = content.substr(0, 200);
-        // Truncate to ~50 words or 350 chars
-        let words = excerptMd.split(/\s+/);
-        let truncated = words.slice(0, 50).join(' ');
-        if (truncated.length > 350) truncated = truncated.slice(0, 350);
-        if (truncated.length < excerptMd.length) truncated = truncated.replace(/[\s.,!?;:]*$/, '') + '...';
-        const processedExcerpt = await remark().use(html).process(truncated);
+        const processedExcerpt = await remark().use(html).process(excerptMd);
         const excerptHtml = processedExcerpt.toString();
         return {
           slug: filename.replace(/\.md$/, ''),
@@ -61,8 +56,6 @@ export async function getStaticProps() {
 export default function Home({ articles, sections }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-
-      <h2 className="text-2xl font-serif font-bold mb-6 text-neutral-900">Latest Articles</h2>
       <div className="md:grid md:grid-cols-12 md:gap-8 flex flex-col gap-10">
         {/* Featured (first) article */}
         {articles[0] && (
