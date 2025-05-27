@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import Image from 'next/image';
 
 function getToday() {
   const now = new Date();
