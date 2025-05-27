@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
+import { remark } from 'remark';
+import html from 'remark-html';
 
 export async function getStaticPaths() {
   const articlesDir = path.join(process.cwd(), 'src', 'content', 'articles');
@@ -30,24 +32,31 @@ export async function getStaticProps({ params }) {
   const articlesDir = path.join(process.cwd(), 'src', 'content', 'articles');
   const filenames = fs.readdirSync(articlesDir);
   const sectionName = params.section;
-  const articles = filenames
-    .filter(fn => fn.endsWith('.md'))
-    .map(filename => {
-      const filePath = path.join(articlesDir, filename);
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data, content } = matter(fileContents);
-      // Ensure date is a string
-      if (data.date && typeof data.date !== 'string') {
-        data.date = String(data.date);
-      }
-      return {
-        slug: filename.replace(/\.md$/, ''),
-        ...data,
-        excerpt: content.substr(0, 200) + (content.length > 200 ? '...' : ''),
-      };
-    })
-    .filter(article => article.section && article.section.toLowerCase() === sectionName)
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
+  const articles = await Promise.all(
+    filenames
+      .filter(fn => fn.endsWith('.md'))
+      .map(async filename => {
+        const filePath = path.join(articlesDir, filename);
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        const { data, content } = matter(fileContents);
+        // Ensure date is a string
+        if (data.date && typeof data.date !== 'string') {
+          data.date = String(data.date);
+        }
+        // Get first paragraph or first 200 chars for excerpt
+        let excerptMd = content.split(/\n\s*\n/)[0];
+        if (!excerptMd) excerptMd = content.substr(0, 200);
+        const processedExcerpt = await remark().use(html).process(excerptMd);
+        const excerptHtml = processedExcerpt.toString();
+        return {
+          slug: filename.replace(/\.md$/, ''),
+          ...data,
+          excerptHtml,
+        };
+      })
+  );
+  const filteredArticles = articles.filter(article => article.section && article.section.toLowerCase() === sectionName);
+  filteredArticles.sort((a, b) => (a.date < b.date ? 1 : -1));
 
   return {
     props: {
@@ -73,9 +82,7 @@ export default function SectionPage({ section, articles }) {
               {article.author && <span>By {article.author} | </span>}
               {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
             </div>
-            <div className="mb-2 text-neutral-800 text-base prose max-w-none">
-              {article.excerpt}
-            </div>
+            <div className="mb-2 text-neutral-800 text-base prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
             {article.tags && article.tags.length > 0 && (
               <div className="mb-2">
                 {article.tags.map(tag => (
