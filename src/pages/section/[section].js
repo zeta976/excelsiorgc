@@ -3,9 +3,33 @@ import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
 
-export async function getStaticProps() {
+export async function getStaticPaths() {
   const articlesDir = path.join(process.cwd(), 'src', 'content', 'articles');
   const filenames = fs.readdirSync(articlesDir);
+  const sections = new Set();
+
+  filenames.forEach(filename => {
+    if (filename.endsWith('.md')) {
+      const filePath = path.join(articlesDir, filename);
+      const fileContents = fs.readFileSync(filePath, 'utf8');
+      const { data } = matter(fileContents);
+      if (data.section) {
+        sections.add(data.section);
+      }
+    }
+  });
+
+  const paths = Array.from(sections).map(section => ({
+    params: { section: section.toLowerCase() },
+  }));
+
+  return { paths, fallback: false };
+}
+
+export async function getStaticProps({ params }) {
+  const articlesDir = path.join(process.cwd(), 'src', 'content', 'articles');
+  const filenames = fs.readdirSync(articlesDir);
+  const sectionName = params.section;
   const articles = filenames
     .filter(fn => fn.endsWith('.md'))
     .map(filename => {
@@ -22,48 +46,31 @@ export async function getStaticProps() {
         excerpt: content.substr(0, 200) + (content.length > 200 ? '...' : ''),
       };
     })
+    .filter(article => article.section && article.section.toLowerCase() === sectionName)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
-
-  // Get all unique sections
-  const sections = Array.from(new Set(articles.map(a => a.section).filter(Boolean)));
 
   return {
     props: {
-      articles: articles.slice(0, 5), // show latest 5
-      sections,
+      section: sectionName,
+      articles,
     },
   };
 }
 
-export default function Home({ articles, sections }) {
+export default function SectionPage({ section, articles }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-2">Excelsior School Newspaper</h1>
-      <p className="mb-6 text-lg text-gray-700">Welcome to the student-run digital newspaper. Read the latest stories, opinions, humor, sports, and more!</p>
-      <nav className="mb-8 flex flex-wrap gap-4">
-        <Link href="/articles" className="font-semibold text-blue-700 underline">All Articles</Link>
-        {sections.map(section => (
-          <Link
-            key={section}
-            href={`/section/${section.toLowerCase()}`}
-            className="font-semibold text-blue-700 underline capitalize"
-          >
-            {section}
-          </Link>
-        ))}
-      </nav>
-      <h2 className="text-2xl font-bold mb-4">Latest Articles</h2>
+      <h1 className="text-3xl font-bold mb-6 capitalize">{section} Articles</h1>
       <ul>
         {articles.map(article => (
           <li key={article.slug} className="mb-8 border-b pb-6">
             <Link href={`/articles/${article.slug}`}
-              className="text-xl font-semibold text-blue-700 hover:underline">
+              className="text-2xl font-semibold text-blue-700 hover:underline">
               {article.title}
             </Link>
             <div className="text-gray-500 text-sm mb-2">
               {article.author && <span>By {article.author} | </span>}
               {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
-              {article.section && <span> | {article.section}</span>}
             </div>
             <div className="mb-2 text-gray-700 text-sm">
               {article.excerpt}
@@ -81,7 +88,7 @@ export default function Home({ articles, sections }) {
           </li>
         ))}
         {articles.length === 0 && (
-          <li>No articles found.</li>
+          <li>No articles found in this section.</li>
         )}
       </ul>
     </main>
