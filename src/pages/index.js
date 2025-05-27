@@ -2,27 +2,36 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
+import { remark } from 'remark';
+import html from 'remark-html';
 
 export async function getStaticProps() {
   const articlesDir = path.join(process.cwd(), 'src', 'content', 'articles');
   const filenames = fs.readdirSync(articlesDir);
-  const articles = filenames
-    .filter(fn => fn.endsWith('.md'))
-    .map(filename => {
-      const filePath = path.join(articlesDir, filename);
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data, content } = matter(fileContents);
-      // Ensure date is a string
-      if (data.date && typeof data.date !== 'string') {
-        data.date = String(data.date);
-      }
-      return {
-        slug: filename.replace(/\.md$/, ''),
-        ...data,
-        excerpt: content.substr(0, 200) + (content.length > 200 ? '...' : ''),
-      };
-    })
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
+  const articles = await Promise.all(
+    filenames
+      .filter(fn => fn.endsWith('.md'))
+      .map(async filename => {
+        const filePath = path.join(articlesDir, filename);
+        const fileContents = fs.readFileSync(filePath, 'utf8');
+        const { data, content } = matter(fileContents);
+        // Ensure date is a string
+        if (data.date && typeof data.date !== 'string') {
+          data.date = String(data.date);
+        }
+        // Get first paragraph or first 200 chars for excerpt
+        let excerptMd = content.split(/\n\s*\n/)[0];
+        if (!excerptMd) excerptMd = content.substr(0, 200);
+        const processedExcerpt = await remark().use(html).process(excerptMd);
+        const excerptHtml = processedExcerpt.toString();
+        return {
+          slug: filename.replace(/\.md$/, ''),
+          ...data,
+          excerptHtml,
+        };
+      })
+  );
+  articles.sort((a, b) => (a.date < b.date ? 1 : -1));
 
   // Get all unique sections
   const sections = Array.from(new Set(articles.map(a => a.section).filter(Boolean)));
@@ -65,9 +74,7 @@ export default function Home({ articles, sections }) {
               {article.author && <span>By {article.author} | </span>}
               {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
             </div>
-            <div className="mb-2 text-neutral-800 text-base prose max-w-none">
-              {article.excerpt}
-            </div>
+            <div className="mb-2 text-neutral-800 text-base prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />
             {article.tags && article.tags.length > 0 && (
               <div className="mb-2">
                 {article.tags.map(tag => (
