@@ -47,20 +47,7 @@ export async function getStaticProps() {
 export default function Home({ articles, sections }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-5xl font-serif font-black mb-2 tracking-tight text-neutral-900">Excelsior School Newspaper</h1>
-      <p className="mb-8 text-xl text-neutral-700 font-sans max-w-2xl">Welcome to the student-run digital newspaper. Read the latest stories, opinions, humor, sports, and more!</p>
-      <nav className="mb-10 flex flex-wrap gap-4">
-        <Link href="/articles" className="font-semibold text-neutral-900 border-b-2 border-transparent hover:border-primary transition-all pb-1">All Articles</Link>
-        {sections.map(section => (
-          <Link
-            key={section}
-            href={`/section/${section.toLowerCase()}`}
-            className="font-semibold text-neutral-900 border-b-2 border-transparent hover:border-primary hover:text-primary transition-all pb-1 capitalize"
-          >
-            {section}
-          </Link>
-        ))}
-      </nav>
+
       <h2 className="text-2xl font-serif font-bold mb-6 text-neutral-900">Latest Articles</h2>
       <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
         {/* Featured (first) article */}
