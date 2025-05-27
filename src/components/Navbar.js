@@ -20,14 +20,29 @@ export default function Navbar({ sections }) {
           <div className="flex items-center gap-2 text-neutral-500 text-sm">
             <span>{getToday()}</span>
           </div>
-          <div className="flex items-center gap-2 text-neutral-500 text-sm cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" /></svg>
-            <span className="hidden sm:inline">Search</span>
-          </div>
+          <form
+            className="flex items-center gap-2 text-neutral-500 text-sm"
+            onSubmit={e => {
+              e.preventDefault();
+              const q = e.target.elements.search.value.trim();
+              if (q) window.location.href = `/search?q=${encodeURIComponent(q)}`;
+            }}
+          >
+            <input
+              type="text"
+              name="search"
+              placeholder="Search..."
+              className="border border-neutral-300 rounded px-2 py-1 text-neutral-800 focus:outline-none focus:border-primary text-sm w-28 sm:w-40 transition-all"
+              aria-label="Search articles"
+            />
+            <button type="submit" className="p-1 hover:text-primary transition-colors" aria-label="Search">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" /></svg>
+            </button>
+          </form>
         </div>
         {/* Centered Logo */}
         <Link href="/" className="flex items-center justify-center w-full">
-          <Image src="/excelsior.png" alt="Excelsior Newspaper Logo" width={360} height={360} className="rounded object-contain max-h-[120px] max-w-[340px] mx-auto" priority />
+          <Image src="/excelsior.png" alt="Excelsior Newspaper Logo" width={450} height={450} className="rounded object-contain max-h-[120px] max-w-[340px] mx-auto" priority />
         </Link>
         {/* Section Links */}
         <div className="w-full flex flex-wrap justify-center gap-6 mt-4">
