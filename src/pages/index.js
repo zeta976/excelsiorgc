@@ -38,40 +38,40 @@ export async function getStaticProps() {
 export default function Home({ articles, sections }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-2">Excelsior School Newspaper</h1>
-      <p className="mb-6 text-lg text-gray-700">Welcome to the student-run digital newspaper. Read the latest stories, opinions, humor, sports, and more!</p>
-      <nav className="mb-8 flex flex-wrap gap-4">
-        <Link href="/articles" className="font-semibold text-blue-700 underline">All Articles</Link>
+      <h1 className="text-5xl font-serif font-black mb-2 tracking-tight text-neutral-900">Excelsior School Newspaper</h1>
+      <p className="mb-8 text-xl text-neutral-700 font-sans max-w-2xl">Welcome to the student-run digital newspaper. Read the latest stories, opinions, humor, sports, and more!</p>
+      <nav className="mb-10 flex flex-wrap gap-4">
+        <Link href="/articles" className="font-semibold text-neutral-900 border-b-2 border-transparent hover:border-primary transition-all pb-1">All Articles</Link>
         {sections.map(section => (
           <Link
             key={section}
             href={`/section/${section.toLowerCase()}`}
-            className="font-semibold text-blue-700 underline capitalize"
+            className="font-semibold text-neutral-900 border-b-2 border-transparent hover:border-primary hover:text-primary transition-all pb-1 capitalize"
           >
             {section}
           </Link>
         ))}
       </nav>
-      <h2 className="text-2xl font-bold mb-4">Latest Articles</h2>
+      <h2 className="text-2xl font-serif font-bold mb-6 text-neutral-900">Latest Articles</h2>
       <ul>
         {articles.map(article => (
-          <li key={article.slug} className="mb-8 border-b pb-6">
+          <li key={article.slug} className="mb-10 border-b border-neutral-200 pb-8">
             <Link href={`/articles/${article.slug}`}
-              className="text-xl font-semibold text-blue-700 hover:underline">
+              className="text-2xl font-serif font-extrabold text-neutral-900 hover:text-primary transition-colors">
               {article.title}
             </Link>
-            <div className="text-gray-500 text-sm mb-2">
+            <div className="text-neutral-500 text-sm mb-2 mt-1">
+              {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
               {article.author && <span>By {article.author} | </span>}
               {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
-              {article.section && <span> | {article.section}</span>}
             </div>
-            <div className="mb-2 text-gray-700 text-sm">
+            <div className="mb-2 text-neutral-800 text-base prose max-w-none">
               {article.excerpt}
             </div>
             {article.tags && article.tags.length > 0 && (
               <div className="mb-2">
                 {article.tags.map(tag => (
-                  <span key={tag} className="inline-block bg-gray-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
+                  <span key={tag} className="inline-block bg-neutral-200 rounded px-2 py-1 text-xs mr-2">{tag}</span>
                 ))}
               </div>
             )}
