@@ -7,7 +7,7 @@ export default function Navbar({ sections }) {
       <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-20">
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
-            <Image src="/excelsior.png" alt="Excelsior Newspaper Logo" width={230} height={230} className="rounded object-contain max-h-[110px] max-w-[240px]" priority />
+            <Image src="/excelsior.png" alt="Excelsior Newspaper Logo" width={360} height={360} className="rounded object-contain max-h-[110px] max-w-[240px]" priority />
           </Link>
         </div>
         <div className="flex gap-6 items-center">
