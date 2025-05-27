@@ -19,6 +19,10 @@ export async function getStaticProps({ params }) {
   const filePath = path.join(process.cwd(), 'src', 'content', 'articles', `${params.slug}.md`);
   const fileContents = fs.readFileSync(filePath, 'utf8');
   const { data, content } = matter(fileContents);
+  // Ensure date is a string (not a Date object)
+  if (data.date && typeof data.date !== 'string') {
+    data.date = String(data.date);
+  }
   const processedContent = await remark().use(html).process(content);
   const contentHtml = processedContent.toString();
 
