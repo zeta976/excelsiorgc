@@ -102,10 +102,10 @@ export default function Home({ articles, sections }) {
               </div>
               <div className="mb-1 text-neutral-800 text-sm prose max-w-none">
                 {(() => {
-                  // Strip HTML tags and limit to 50 words
+                  // Strip HTML tags and limit to 35 words
                   const plainText = articles[1].excerptHtml.replace(/<[^>]+>/g, '');
-                  const words = plainText.split(/\s+/).slice(0, 50).join(' ');
-                  return words + (plainText.split(/\s+/).length > 50 ? '…' : '');
+                  const words = plainText.split(/\s+/).slice(0, 35).join(' ');
+                  return words + (plainText.split(/\s+/).length > 35 ? '…' : '');
                 })()}
               </div>
             </div>
@@ -125,10 +125,10 @@ export default function Home({ articles, sections }) {
               </div>
               <div className="mb-1 text-neutral-800 text-sm prose max-w-none">
                 {(() => {
-                  // Strip HTML tags and limit to 50 words
+                  // Strip HTML tags and limit to 35 words
                   const plainText = articles[2].excerptHtml.replace(/<[^>]+>/g, '');
-                  const words = plainText.split(/\s+/).slice(0, 50).join(' ');
-                  return words + (plainText.split(/\s+/).length > 50 ? '…' : '');
+                  const words = plainText.split(/\s+/).slice(0, 35).join(' ');
+                  return words + (plainText.split(/\s+/).length > 35 ? '…' : '');
                 })()}
               </div>
             </div>

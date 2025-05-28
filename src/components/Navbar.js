@@ -31,7 +31,7 @@ export default function Navbar({ sections }) {
             <input
               type="text"
               name="search"
-              placeholder="Search..."
+              placeholder="Buscar..."
               className="border border-neutral-300 rounded px-2 py-1 text-neutral-800 focus:outline-none focus:border-primary text-sm w-28 sm:w-40 transition-all"
               aria-label="Search articles"
             />
