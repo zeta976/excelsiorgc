@@ -166,12 +166,111 @@ export default function Juegos() {
         >
           Serpiente
         </button>
-        {/* Aquí puedes agregar más botones para otros juegos en el futuro */}
+        <button
+          className={`px-4 py-2 rounded font-bold border ${selected === 'sudoku' ? 'bg-blue-500 text-white' : 'bg-white text-blue-700 border-blue-500'}`}
+          onClick={() => setSelected('sudoku')}
+        >
+          Sudoku
+        </button>
       </div>
       <div className="bg-white rounded shadow p-4">
         {selected === 'snake' && <SnakeGame />}
-        {/* Aquí puedes renderizar otros juegos según el valor de selected */}
+        {selected === 'sudoku' && <SudokuGame />}
       </div>
     </main>
+  );
+}
+
+// --- Sudoku Game Component ---
+function SudokuGame() {
+  // Example easy puzzle (0 = empty)
+  const initial = [
+    [5,3,0,0,7,0,0,0,0],
+    [6,0,0,1,9,5,0,0,0],
+    [0,9,8,0,0,0,0,6,0],
+    [8,0,0,0,6,0,0,0,3],
+    [4,0,0,8,0,3,0,0,1],
+    [7,0,0,0,2,0,0,0,6],
+    [0,6,0,0,0,0,2,8,0],
+    [0,0,0,4,1,9,0,0,5],
+    [0,0,0,0,8,0,0,7,9],
+  ];
+  const [grid, setGrid] = React.useState(initial.map(row => [...row]));
+  const [message, setMessage] = React.useState("");
+
+  // Check if a value is valid in its position
+  function isValid(grid, row, col, val) {
+    for (let i = 0; i < 9; i++) {
+      if (grid[row][i] === val && i !== col) return false;
+      if (grid[i][col] === val && i !== row) return false;
+    }
+    const boxRow = Math.floor(row/3)*3;
+    const boxCol = Math.floor(col/3)*3;
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+      if (grid[boxRow+i][boxCol+j] === val && (boxRow+i !== row || boxCol+j !== col)) return false;
+    }
+    return true;
+  }
+
+  // Handle user input
+  function handleChange(row, col, e) {
+    let val = e.target.value;
+    if (val === "") val = 0;
+    else val = parseInt(val);
+    if (isNaN(val) || val < 0 || val > 9) return;
+    // Only allow editing empty cells
+    if (initial[row][col] !== 0) return;
+    const newGrid = grid.map(r => [...r]);
+    newGrid[row][col] = val;
+    setGrid(newGrid);
+    setMessage("");
+  }
+
+  // Check solution
+  function checkSolution() {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        const val = grid[row][col];
+        if (val === 0 || !isValid(grid, row, col, val)) {
+          setMessage("¡Hay errores o celdas vacías!");
+          return;
+        }
+      }
+    }
+    setMessage("¡Correcto! Sudoku resuelto.");
+  }
+
+  // Reset puzzle
+  function reset() {
+    setGrid(initial.map(row => [...row]));
+    setMessage("");
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      <h2 className="text-xl font-bold mb-2">Sudoku</h2>
+      <div className="grid grid-cols-9 gap-0.5 bg-neutral-300 p-1 rounded">
+        {grid.map((row, i) =>
+          row.map((cell, j) => (
+            <input
+              key={i+"-"+j}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              className={`w-8 h-8 text-center text-lg border ${initial[i][j]!==0 ? 'bg-neutral-200 font-bold' : 'bg-white'} ${((i+1)%3===0 && i!==8 ? 'border-b-2 border-neutral-500' : '')} ${((j+1)%3===0 && j!==8 ? 'border-r-2 border-neutral-500' : '')}`}
+              value={cell === 0 ? "" : cell}
+              onChange={e => handleChange(i,j,e)}
+              disabled={initial[i][j] !== 0}
+            />
+          ))
+        )}
+      </div>
+      <div className="flex gap-2 mt-4">
+        <button className="px-3 py-1 bg-blue-600 text-white rounded" onClick={checkSolution}>Comprobar</button>
+        <button className="px-3 py-1 bg-neutral-400 text-white rounded" onClick={reset}>Reiniciar</button>
+      </div>
+      {message && <div className="mt-2 text-base font-semibold text-blue-700">{message}</div>}
+      <div className="mt-2 text-xs text-neutral-500">Llena la cuadrícula con números del 1 al 9. Cada fila, columna y subcuadro 3x3 debe contener todos los números del 1 al 9 sin repetir.</div>
+    </div>
   );
 }
