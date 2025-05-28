@@ -2,7 +2,7 @@
 title: Columna de Opinión
 author: Alejandro Zuluaga
 date: 2025-05-27T16:21:23.429Z
-section: Opinion
+section: Opinión
 tags:
   - Opinion
 featured_image: /uploads/juancarloslosadavargas600.png
