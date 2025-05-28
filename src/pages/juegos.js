@@ -31,32 +31,28 @@ function SnakeGame() {
         let newDir = directionRef.current;
         switch (e.key) {
           case 'ArrowUp':
-            if (dx === 0 && dy === 1) break; // right
-            if (dx === 0 && dy === -1) break; // left
-            if (dx === 0 && dy === 0) break;
-            if (dx !== 1 && dx !== -1) newDir = [-1, 0];
+            if (dx === 0 && dy !== 0) newDir = [-1, 0]; // moving horizontally, allow up
             break;
           case 'ArrowDown':
-            if (dx === 0 && dy === 1) break; // right
-            if (dx === 0 && dy === -1) break; // left
-            if (dx === 0 && dy === 0) break;
-            if (dx !== 1 && dx !== -1) newDir = [1, 0];
+            if (dx === 0 && dy !== 0) newDir = [1, 0]; // moving horizontally, allow down
             break;
           case 'ArrowLeft':
-            if (dx === 1 && dy === 0) break; // down
-            if (dx === -1 && dy === 0) break; // up
-            if (dy !== 1 && dy !== -1) newDir = [0, -1];
+            if (dy === 0 && dx !== 0) newDir = [0, -1]; // moving vertically, allow left
             break;
           case 'ArrowRight':
-            if (dx === 1 && dy === 0) break; // down
-            if (dx === -1 && dy === 0) break; // up
-            if (dy !== 1 && dy !== -1) newDir = [0, 1];
+            if (dy === 0 && dx !== 0) newDir = [0, 1]; // moving vertically, allow right
             break;
           default: break;
         }
-        if (newDir !== directionRef.current) {
-          setDirection(newDir);
-          directionRef.current = newDir;
+        // Prevent reversing direction
+        if (
+          (newDir[0] !== -dx || newDir[1] !== -dy) &&
+          (newDir[0] !== dx || newDir[1] !== dy)
+        ) {
+          if (newDir !== directionRef.current) {
+            setDirection(newDir);
+            directionRef.current = newDir;
+          }
         }
       }
     };
