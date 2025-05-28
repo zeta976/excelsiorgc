@@ -189,8 +189,6 @@ export default function Juegos() {
 }
 
 // --- Sudoku Game Component ---
-function SudokuGame() {}
-
 // --- 2048 Game Component ---
 function Game2048() {
   const size = 4;
