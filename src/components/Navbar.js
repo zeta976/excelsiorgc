@@ -54,6 +54,7 @@ export default function Navbar({ sections }) {
         {/* Section Links */}
         <div className="w-full flex flex-wrap justify-center gap-6 mt-4">
           <Link href="/articles" className="font-serif text-lg font-bold text-neutral-900 border-b-2 border-transparent hover:border-primary transition-all pb-1">Artículos</Link>
+<Link href="/juegos" className="font-serif text-lg font-bold text-neutral-900 border-b-2 border-transparent hover:border-primary transition-all pb-1">Juegos</Link>
           {sections && sections.map(section => (
             <Link
               key={section}
