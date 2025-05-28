@@ -2,7 +2,7 @@
 title: Esta es Mi Opinion
 author: Valleilley
 date: 2025-05-27T18:56:48.633Z
-section: Opinion
+section: Opinión
 tags:
   - opinion
   - futbol
