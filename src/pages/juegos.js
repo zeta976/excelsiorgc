@@ -27,16 +27,37 @@ function SnakeGame() {
     const handleKey = (e) => {
       if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
         e.preventDefault();
+        const [dx, dy] = directionRef.current;
         let newDir = directionRef.current;
         switch (e.key) {
-          case 'ArrowUp': if (newDir[1] !== 1) newDir = [-1, 0]; break;
-          case 'ArrowDown': if (newDir[1] !== -1) newDir = [1, 0]; break;
-          case 'ArrowLeft': if (newDir[0] !== 1) newDir = [0, -1]; break;
-          case 'ArrowRight': if (newDir[0] !== -1) newDir = [0, 1]; break;
+          case 'ArrowUp':
+            if (dx === 0 && dy === 1) break; // right
+            if (dx === 0 && dy === -1) break; // left
+            if (dx === 0 && dy === 0) break;
+            if (dx !== 1 && dx !== -1) newDir = [-1, 0];
+            break;
+          case 'ArrowDown':
+            if (dx === 0 && dy === 1) break; // right
+            if (dx === 0 && dy === -1) break; // left
+            if (dx === 0 && dy === 0) break;
+            if (dx !== 1 && dx !== -1) newDir = [1, 0];
+            break;
+          case 'ArrowLeft':
+            if (dx === 1 && dy === 0) break; // down
+            if (dx === -1 && dy === 0) break; // up
+            if (dy !== 1 && dy !== -1) newDir = [0, -1];
+            break;
+          case 'ArrowRight':
+            if (dx === 1 && dy === 0) break; // down
+            if (dx === -1 && dy === 0) break; // up
+            if (dy !== 1 && dy !== -1) newDir = [0, 1];
+            break;
           default: break;
         }
-        setDirection(newDir);
-        directionRef.current = newDir;
+        if (newDir !== directionRef.current) {
+          setDirection(newDir);
+          directionRef.current = newDir;
+        }
       }
     };
     window.addEventListener('keydown', handleKey, { passive: false });
