@@ -2,7 +2,7 @@
 title: Sports Article Title
 author: Alejandro Zuluaga
 date: 2025-05-27T16:17:23.354Z
-section: Sports
+section: Deportes
 tags:
   - Futbol
   - Deporte
