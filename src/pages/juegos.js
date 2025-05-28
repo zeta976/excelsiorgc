@@ -184,12 +184,19 @@ export default function Juegos() {
         >
           Tres en Raya
         </button>
+        <button
+          className={`px-4 py-2 rounded font-bold border ${selected === 'minesweeper' ? 'bg-green-600 text-white' : 'bg-white text-green-700 border-green-600'}`}
+          onClick={() => setSelected('minesweeper')}
+        >
+          Buscaminas
+        </button>
       </div>
       <div className="bg-white rounded shadow p-4">
         {selected === 'snake' && <SnakeGame />}
         {selected === 'sudoku' && <SudokuGame />}
         {selected === '2048' && <Game2048 selected={selected} />}
         {selected === 'tictactoe' && <TicTacToeGame />}
+        {selected === 'minesweeper' && <MinesweeperGame />}
       </div>
     </main>
   );
@@ -197,6 +204,146 @@ export default function Juegos() {
 
 // --- Sudoku Game Component ---
 // --- 2048 Game Component ---
+// --- Minesweeper (Buscaminas) Game Component ---
+function MinesweeperGame() {
+  const ROWS = 9, COLS = 9, MINES = 10;
+  const createEmptyBoard = () => Array(ROWS).fill(null).map(() => Array(COLS).fill({ revealed: false, mine: false, flag: false, adjacent: 0 }));
+
+  function plantMines(board, firstRow, firstCol) {
+    let placed = 0;
+    const newBoard = board.map(row => row.map(cell => ({ ...cell })));
+    while (placed < MINES) {
+      const r = Math.floor(Math.random() * ROWS);
+      const c = Math.floor(Math.random() * COLS);
+      // Don't plant on the first click or on an already mined cell
+      if ((r === firstRow && c === firstCol) || newBoard[r][c].mine) continue;
+      newBoard[r][c].mine = true;
+      placed++;
+    }
+    // Calculate adjacent mines
+    for (let i = 0; i < ROWS; i++) {
+      for (let j = 0; j < COLS; j++) {
+        if (newBoard[i][j].mine) continue;
+        let count = 0;
+        for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = i + dr, nc = j + dc;
+          if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && newBoard[nr][nc].mine) count++;
+        }
+        newBoard[i][j].adjacent = count;
+      }
+    }
+    return newBoard;
+  }
+
+  const [board, setBoard] = React.useState(createEmptyBoard());
+  const [minesPlanted, setMinesPlanted] = React.useState(false);
+  const [gameOver, setGameOver] = React.useState(false);
+  const [won, setWon] = React.useState(false);
+  const [flags, setFlags] = React.useState(0);
+
+  // Reveal cells recursively
+  function reveal(board, r, c, visited = {}) {
+    if (board[r][c].revealed || board[r][c].flag) return;
+    board[r][c].revealed = true;
+    if (board[r][c].adjacent === 0 && !board[r][c].mine) {
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !(dr === 0 && dc === 0)) {
+          if (!board[nr][nc].revealed && !board[nr][nc].mine) {
+            reveal(board, nr, nc, visited);
+          }
+        }
+      }
+    }
+  }
+
+  function handleCellClick(r, c) {
+    if (gameOver || won) return;
+    let newBoard = board.map(row => row.map(cell => ({ ...cell })));
+    if (!minesPlanted) {
+      newBoard = plantMines(newBoard, r, c);
+      setMinesPlanted(true);
+    }
+    if (newBoard[r][c].flag) return;
+    if (newBoard[r][c].mine) {
+      newBoard[r][c].revealed = true;
+      setBoard(newBoard);
+      setGameOver(true);
+      return;
+    }
+    reveal(newBoard, r, c);
+    setBoard(newBoard);
+    checkWin(newBoard);
+  }
+
+  function handleRightClick(e, r, c) {
+    e.preventDefault();
+    if (gameOver || won || board[r][c].revealed) return;
+    let newBoard = board.map(row => row.map(cell => ({ ...cell })));
+    if (newBoard[r][c].flag) {
+      newBoard[r][c].flag = false;
+      setFlags(f => f - 1);
+    } else if (flags < MINES) {
+      newBoard[r][c].flag = true;
+      setFlags(f => f + 1);
+    }
+    setBoard(newBoard);
+    checkWin(newBoard);
+  }
+
+  function checkWin(bd) {
+    let revealedCount = 0, correctFlags = 0;
+    for (let i = 0; i < ROWS; i++) for (let j = 0; j < COLS; j++) {
+      if (bd[i][j].revealed) revealedCount++;
+      if (bd[i][j].flag && bd[i][j].mine) correctFlags++;
+    }
+    if (revealedCount + MINES === ROWS * COLS || correctFlags === MINES) setWon(true);
+  }
+
+  function reset() {
+    setBoard(createEmptyBoard());
+    setMinesPlanted(false);
+    setGameOver(false);
+    setWon(false);
+    setFlags(0);
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      <h2 className="text-xl font-bold mb-2">Buscaminas</h2>
+      <div className="mb-2 text-base">Minas: <span className="font-bold">{MINES}</span> | Banderas: <span className="font-bold">{flags}</span></div>
+      <div className="grid grid-cols-9 gap-1 bg-green-100 p-2 rounded select-none">
+        {board.map((row, i) =>
+          row.map((cell, j) => (
+            <button
+              key={i+"-"+j}
+              className={`w-8 h-8 flex items-center justify-center text-base font-bold rounded border border-green-300
+                ${cell.revealed ? (cell.mine ? 'bg-red-500 text-white' : 'bg-green-200') : 'bg-green-50'}
+                ${cell.flag ? 'bg-yellow-400 text-green-900' : ''}`}
+              onClick={() => handleCellClick(i, j)}
+              onContextMenu={e => handleRightClick(e, i, j)}
+              disabled={cell.revealed || gameOver || won}
+              aria-label={`Celda ${i+1},${j+1}`}
+            >
+              {cell.revealed ? (cell.mine ? '💣' : (cell.adjacent || '')) : (cell.flag ? '🚩' : '')}
+            </button>
+          ))
+        )}
+      </div>
+      {(gameOver || won) && (
+        <div className={`mt-4 text-lg font-bold ${won ? 'text-green-700' : 'text-red-600'}`}>
+          {won ? '¡Ganaste! ¡Has encontrado todas las minas!' : '¡Perdiste! Había una mina.'}
+        </div>
+      )}
+      <div className="flex gap-2 mt-4">
+        <button className="px-3 py-1 bg-green-600 text-white rounded" onClick={reset}>Reiniciar</button>
+      </div>
+      <div className="mt-2 text-xs text-neutral-500">Haz clic izquierdo para descubrir una celda. Haz clic derecho para marcar/desmarcar una bandera. Descubre todas las celdas sin minas para ganar.</div>
+    </div>
+  );
+}
+
 // --- Tic Tac Toe Game Component ---
 function TicTacToeGame() {
   const emptyBoard = Array(3).fill(null).map(() => Array(3).fill(null));
@@ -241,7 +388,7 @@ function TicTacToeGame() {
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="text-xl font-bold mb-2">Tres en Raya</h2>
+      <h2 className="text-xl font-bold mb-2">Tricky</h2>
       <div className="grid grid-cols-3 gap-1 bg-pink-100 p-2 rounded">
         {board.map((row, i) =>
           row.map((cell, j) => (
