@@ -178,11 +178,18 @@ export default function Juegos() {
         >
           2048
         </button>
+        <button
+          className={`px-4 py-2 rounded font-bold border ${selected === 'tictactoe' ? 'bg-pink-500 text-white' : 'bg-white text-pink-700 border-pink-500'}`}
+          onClick={() => setSelected('tictactoe')}
+        >
+          Tres en Raya
+        </button>
       </div>
       <div className="bg-white rounded shadow p-4">
         {selected === 'snake' && <SnakeGame />}
         {selected === 'sudoku' && <SudokuGame />}
         {selected === '2048' && <Game2048 selected={selected} />}
+        {selected === 'tictactoe' && <TicTacToeGame />}
       </div>
     </main>
   );
@@ -190,182 +197,249 @@ export default function Juegos() {
 
 // --- Sudoku Game Component ---
 // --- 2048 Game Component ---
-function Game2048({ selected }) {
-  const size = 4;
-  const [board, setBoard] = React.useState(() => addRandom(addRandom(Array(size).fill(0).map(() => Array(size).fill(0)))));
-  const [score, setScore] = React.useState(0);
-  const [gameOver, setGameOver] = React.useState(false);
-  const [won, setWon] = React.useState(false);
+// --- Tic Tac Toe Game Component ---
+function TicTacToeGame() {
+  const emptyBoard = Array(3).fill(null).map(() => Array(3).fill(null));
+  const [board, setBoard] = React.useState(emptyBoard);
+  const [turn, setTurn] = React.useState('X');
+  const [winner, setWinner] = React.useState(null);
+  const [draw, setDraw] = React.useState(false);
 
-  // Use a ref to always get the latest state in the event handler
-  const boardRef = React.useRef(board);
-  const gameOverRef = React.useRef(gameOver);
-  const wonRef = React.useRef(won);
-  React.useEffect(() => { boardRef.current = board; }, [board]);
-  React.useEffect(() => { gameOverRef.current = gameOver; }, [gameOver]);
-  React.useEffect(() => { wonRef.current = won; }, [won]);
+  function checkWinner(bd) {
+    // Rows, columns, diagonals
+    for (let i = 0; i < 3; i++) {
+      if (bd[i][0] && bd[i][0] === bd[i][1] && bd[i][1] === bd[i][2]) return bd[i][0];
+      if (bd[0][i] && bd[0][i] === bd[1][i] && bd[1][i] === bd[2][i]) return bd[0][i];
+    }
+    if (bd[0][0] && bd[0][0] === bd[1][1] && bd[1][1] === bd[2][2]) return bd[0][0];
+    if (bd[0][2] && bd[0][2] === bd[1][1] && bd[1][1] === bd[2][0]) return bd[0][2];
+    return null;
+  }
 
-  React.useEffect(() => {
-    if (selected !== '2048') return;
-    const handleKey = (e) => {
-      if (gameOverRef.current || wonRef.current) return;
-      let moved = false;
-      let newBoard = boardRef.current.map(row => [...row]);
-      let points = 0;
-      if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
-        e.preventDefault();
-        switch (e.key) {
-          case 'ArrowUp': [newBoard, points, moved] = move(newBoard, 'up'); break;
-          case 'ArrowDown': [newBoard, points, moved] = move(newBoard, 'down'); break;
-          case 'ArrowLeft': [newBoard, points, moved] = move(newBoard, 'left'); break;
-          case 'ArrowRight': [newBoard, points, moved] = move(newBoard, 'right'); break;
-          default: break;
-        }
-        if (moved) {
-          newBoard = addRandom(newBoard);
-          setBoard(newBoard);
-          setScore(s => s + points);
-          if (has2048(newBoard)) setWon(true);
-          else if (!canMove(newBoard)) setGameOver(true);
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKey, { passive: false });
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [selected]);
+  function checkDraw(bd) {
+    return bd.flat().every(cell => cell !== null);
+  }
+
+  function handleClick(i, j) {
+    if (board[i][j] || winner) return;
+    const newBoard = board.map(row => [...row]);
+    newBoard[i][j] = turn;
+    const win = checkWinner(newBoard);
+    const isDraw = !win && checkDraw(newBoard);
+    setBoard(newBoard);
+    setWinner(win);
+    setDraw(isDraw);
+    if (!win && !isDraw) setTurn(turn === 'X' ? 'O' : 'X');
+  }
 
   function reset() {
-    setBoard(addRandom(addRandom(Array(size).fill(0).map(() => Array(size).fill(0)))));
-    setScore(0);
-    setGameOver(false);
-    setWon(false);
-  }
-
-  // --- Helper functions ---
-  function addRandom(bd) {
-    const empty = [];
-    for (let i=0; i<size; i++) for (let j=0; j<size; j++) if (bd[i][j]===0) empty.push([i,j]);
-    if (empty.length === 0) return bd;
-    const [i,j] = empty[Math.floor(Math.random()*empty.length)];
-    bd[i][j] = Math.random()<0.9 ? 2 : 4;
-    return bd;
-  }
-  function transpose(bd) {
-    return bd[0].map((_,i) => bd.map(row => row[i]));
-  }
-  function reverse(bd) {
-    return bd.map(row => [...row].reverse());
-  }
-  function compress(row) {
-    const filtered = row.filter(x => x !== 0);
-    while (filtered.length < size) filtered.push(0);
-    return filtered;
-  }
-  function merge(row) {
-    let points = 0;
-    for (let i=0; i<size-1; i++) {
-      if (row[i] !== 0 && row[i] === row[i+1]) {
-        row[i] *= 2;
-        points += row[i];
-        row[i+1] = 0;
-      }
-    }
-    return [row, points];
-  }
-  function move(bd, dir) {
-    let moved = false;
-    let points = 0;
-    let newBd = bd.map(row => [...row]);
-    if (dir === 'up') {
-      newBd = transpose(newBd);
-      for (let i=0; i<size; i++) {
-        let row = compress(newBd[i]);
-        let merged, pointsThisRow;
-        [merged, pointsThisRow] = merge(row);
-        points += pointsThisRow;
-        row = compress(merged);
-        if (!arraysEqual(row, newBd[i])) moved = true;
-        newBd[i] = row;
-      }
-      newBd = transpose(newBd);
-    } else if (dir === 'down') {
-      newBd = transpose(newBd);
-      newBd = reverse(newBd);
-      for (let i=0; i<size; i++) {
-        let row = compress(newBd[i]);
-        let merged, pointsThisRow;
-        [merged, pointsThisRow] = merge(row);
-        points += pointsThisRow;
-        row = compress(merged);
-        if (!arraysEqual(row, newBd[i])) moved = true;
-        newBd[i] = row;
-      }
-      newBd = reverse(newBd);
-      newBd = transpose(newBd);
-    } else if (dir === 'left') {
-      for (let i=0; i<size; i++) {
-        let row = compress(newBd[i]);
-        let merged, pointsThisRow;
-        [merged, pointsThisRow] = merge(row);
-        points += pointsThisRow;
-        row = compress(merged);
-        if (!arraysEqual(row, newBd[i])) moved = true;
-        newBd[i] = row;
-      }
-    } else if (dir === 'right') {
-      newBd = reverse(newBd);
-      for (let i=0; i<size; i++) {
-        let row = compress(newBd[i]);
-        let merged, pointsThisRow;
-        [merged, pointsThisRow] = merge(row);
-        points += pointsThisRow;
-        row = compress(merged);
-        if (!arraysEqual(row, newBd[i])) moved = true;
-        newBd[i] = row;
-      }
-      newBd = reverse(newBd);
-    }
-    return [newBd, points, moved];
-  }
-  function arraysEqual(a, b) {
-    return a.length === b.length && a.every((v, i) => v === b[i]);
-  }
-  function canMove(bd) {
-    for (let i=0; i<size; i++) for (let j=0; j<size; j++) {
-      if (bd[i][j]===0) return true;
-      if (i<size-1 && bd[i][j]===bd[i+1][j]) return true;
-      if (j<size-1 && bd[i][j]===bd[i][j+1]) return true;
-    }
-    return false;
-  }
-  function has2048(bd) {
-    for (let i=0; i<size; i++) for (let j=0; j<size; j++) if (bd[i][j]===2048) return true;
-    return false;
+    setBoard(emptyBoard);
+    setTurn('X');
+    setWinner(null);
+    setDraw(false);
   }
 
   return (
-    <div className="flex flex-col items-center select-none">
-      <h2 className="text-xl font-bold mb-2">2048</h2>
-      <div className="mb-2 text-base">Puntaje: <span className="font-bold">{score}</span></div>
-      <div className="grid grid-cols-4 gap-1 bg-yellow-100 p-2 rounded">
-        {board.map((row, i) => row.map((cell, j) => (
-          <div key={i + '-' + j}
-            className={`w-16 h-16 flex items-center justify-center text-2xl font-bold rounded border ${cell ? 'bg-yellow-300' : 'bg-yellow-50'} ${cell >= 128 ? 'text-white bg-yellow-500' : ''}`}
-          >{cell !== 0 ? cell : ''}</div>
-        )))}
+    <div className="flex flex-col items-center">
+      <h2 className="text-xl font-bold mb-2">Tres en Raya</h2>
+      <div className="grid grid-cols-3 gap-1 bg-pink-100 p-2 rounded">
+        {board.map((row, i) =>
+          row.map((cell, j) => (
+            <button
+              key={i+"-"+j}
+              className={`w-16 h-16 flex items-center justify-center text-3xl font-bold rounded border border-pink-300 hover:bg-pink-200 ${cell === 'X' ? 'text-pink-700' : cell === 'O' ? 'text-blue-700' : ''}`}
+              onClick={() => handleClick(i, j)}
+              disabled={!!cell || !!winner || draw}
+              aria-label={`Celda ${i+1},${j+1}`}
+            >{cell}</button>
+          ))
+        )}
       </div>
-      {(gameOver || won) && (
-        <div className={`mt-4 text-lg font-bold ${won ? 'text-green-700' : 'text-red-600'}`}>
-          {won ? '¡Ganaste! ¡Llegaste a 2048!' : 'Juego terminado. ¡Intenta de nuevo!'}
-        </div>
-      )}
-      <div className="flex gap-2 mt-4">
-        <button className="px-3 py-1 bg-yellow-600 text-white rounded" onClick={reset}>Reiniciar</button>
+      <div className="mt-4 text-lg font-semibold">
+        {winner && <span className="text-green-700">¡Ganador: {winner}!</span>}
+        {!winner && draw && <span className="text-neutral-700">¡Empate!</span>}
+        {!winner && !draw && <span className="text-pink-700">Turno: {turn}</span>}
       </div>
-      <div className="mt-2 text-xs text-neutral-500">Usa las flechas del teclado para mover las fichas. Combina números iguales para llegar a 2048.</div>
+      <button className="px-3 py-1 mt-4 bg-pink-600 text-white rounded" onClick={reset}>Reiniciar</button>
+      <div className="mt-2 text-xs text-neutral-500">Haz clic en una celda para colocar tu ficha. Gana quien logre tres en línea.</div>
     </div>
   );
 }
+
+const size = 4;
+const [board, setBoard] = React.useState(() => addRandom(addRandom(Array(size).fill(0).map(() => Array(size).fill(0)))));
+const [score, setScore] = React.useState(0);
+const [gameOver, setGameOver] = React.useState(false);
+const [won, setWon] = React.useState(false);
+
+// Use a ref to always get the latest state in the event handler
+const boardRef = React.useRef(board);
+const gameOverRef = React.useRef(gameOver);
+const wonRef = React.useRef(won);
+React.useEffect(() => { boardRef.current = board; }, [board]);
+React.useEffect(() => { gameOverRef.current = gameOver; }, [gameOver]);
+React.useEffect(() => { wonRef.current = won; }, [won]);
+
+React.useEffect(() => {
+  if (selected !== '2048') return;
+  const handleKey = (e) => {
+    if (gameOverRef.current || wonRef.current) return;
+    let moved = false;
+    let newBoard = boardRef.current.map(row => [...row]);
+    let points = 0;
+    if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
+      e.preventDefault();
+      switch (e.key) {
+        case 'ArrowUp': [newBoard, points, moved] = move(newBoard, 'up'); break;
+        case 'ArrowDown': [newBoard, points, moved] = move(newBoard, 'down'); break;
+        case 'ArrowLeft': [newBoard, points, moved] = move(newBoard, 'left'); break;
+        case 'ArrowRight': [newBoard, points, moved] = move(newBoard, 'right'); break;
+        default: break;
+      }
+      if (moved) {
+        newBoard = addRandom(newBoard);
+        setBoard(newBoard);
+        setScore(s => s + points);
+        if (has2048(newBoard)) setWon(true);
+        else if (!canMove(newBoard)) setGameOver(true);
+      }
+    }
+  };
+  window.addEventListener('keydown', handleKey, { passive: false });
+  return () => window.removeEventListener('keydown', handleKey);
+}, [selected]);
+
+function reset() {
+  setBoard(addRandom(addRandom(Array(size).fill(0).map(() => Array(size).fill(0)))));
+  setScore(0);
+  setGameOver(false);
+  setWon(false);
+}
+
+// --- Helper functions ---
+function addRandom(bd) {
+  const empty = [];
+  for (let i=0; i<size; i++) for (let j=0; j<size; j++) if (bd[i][j]===0) empty.push([i,j]);
+  if (empty.length === 0) return bd;
+  const [i,j] = empty[Math.floor(Math.random()*empty.length)];
+  bd[i][j] = Math.random()<0.9 ? 2 : 4;
+  return bd;
+}
+function transpose(bd) {
+  return bd[0].map((_,i) => bd.map(row => row[i]));
+}
+function reverse(bd) {
+  return bd.map(row => [...row].reverse());
+}
+function compress(row) {
+  const filtered = row.filter(x => x !== 0);
+  while (filtered.length < size) filtered.push(0);
+  return filtered;
+}
+function merge(row) {
+  let points = 0;
+  for (let i=0; i<size-1; i++) {
+    if (row[i] !== 0 && row[i] === row[i+1]) {
+      row[i] *= 2;
+      points += row[i];
+      row[i+1] = 0;
+    }
+  }
+  return [row, points];
+}
+function move(bd, dir) {
+  let moved = false;
+  let points = 0;
+  let newBd = bd.map(row => [...row]);
+  if (dir === 'up') {
+    newBd = transpose(newBd);
+    for (let i=0; i<size; i++) {
+      let row = compress(newBd[i]);
+      let merged, pointsThisRow;
+      [merged, pointsThisRow] = merge(row);
+      points += pointsThisRow;
+      row = compress(merged);
+      if (!arraysEqual(row, newBd[i])) moved = true;
+      newBd[i] = row;
+    }
+    newBd = transpose(newBd);
+  } else if (dir === 'down') {
+    newBd = transpose(newBd);
+    newBd = reverse(newBd);
+    for (let i=0; i<size; i++) {
+      let row = compress(newBd[i]);
+      let merged, pointsThisRow;
+      [merged, pointsThisRow] = merge(row);
+      points += pointsThisRow;
+      row = compress(merged);
+      if (!arraysEqual(row, newBd[i])) moved = true;
+      newBd[i] = row;
+    }
+    newBd = reverse(newBd);
+    newBd = transpose(newBd);
+  } else if (dir === 'left') {
+    for (let i=0; i<size; i++) {
+      let row = compress(newBd[i]);
+      let merged, pointsThisRow;
+      [merged, pointsThisRow] = merge(row);
+      points += pointsThisRow;
+      row = compress(merged);
+      if (!arraysEqual(row, newBd[i])) moved = true;
+      newBd[i] = row;
+    }
+  } else if (dir === 'right') {
+    newBd = reverse(newBd);
+    for (let i=0; i<size; i++) {
+      let row = compress(newBd[i]);
+      let merged, pointsThisRow;
+      [merged, pointsThisRow] = merge(row);
+      points += pointsThisRow;
+      row = compress(merged);
+      if (!arraysEqual(row, newBd[i])) moved = true;
+      newBd[i] = row;
+    }
+    newBd = reverse(newBd);
+  }
+  return [newBd, points, moved];
+}
+function arraysEqual(a, b) {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+function canMove(bd) {
+  for (let i=0; i<size; i++) for (let j=0; j<size; j++) {
+    if (bd[i][j]===0) return true;
+    if (i<size-1 && bd[i][j]===bd[i+1][j]) return true;
+    if (j<size-1 && bd[i][j]===bd[i][j+1]) return true;
+  }
+  return false;
+}
+function has2048(bd) {
+  for (let i=0; i<size; i++) for (let j=0; j<size; j++) if (bd[i][j]===2048) return true;
+  return false;
+}
+
+return (
+  <div className="flex flex-col items-center select-none">
+    <h2 className="text-xl font-bold mb-2">2048</h2>
+    <div className="mb-2 text-base">Puntaje: <span className="font-bold">{score}</span></div>
+    <div className="grid grid-cols-4 gap-1 bg-yellow-100 p-2 rounded">
+      {board.map((row, i) => row.map((cell, j) => (
+        <div key={i + '-' + j}
+          className={`w-16 h-16 flex items-center justify-center text-2xl font-bold rounded border ${cell ? 'bg-yellow-300' : 'bg-yellow-50'} ${cell >= 128 ? 'text-white bg-yellow-500' : ''}`}
+        >{cell !== 0 ? cell : ''}</div>
+      )))}
+    </div>
+    {(gameOver || won) && (
+      <div className={`mt-4 text-lg font-bold ${won ? 'text-green-700' : 'text-red-600'}`}>
+        {won ? '¡Ganaste! ¡Llegaste a 2048!' : 'Juego terminado. ¡Intenta de nuevo!'}
+      </div>
+    )}
+    <div className="flex gap-2 mt-4">
+      <button className="px-3 py-1 bg-yellow-600 text-white rounded" onClick={reset}>Reiniciar</button>
+    </div>
+    <div className="mt-2 text-xs text-neutral-500">Usa las flechas del teclado para mover las fichas. Combina números iguales para llegar a 2048.</div>
+  </div>
+);
 
 function SudokuGame() {
   // Example easy puzzle (0 = empty)
