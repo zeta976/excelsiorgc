@@ -3,37 +3,52 @@ import React, { useState } from 'react';
 // --- Simple Snake Game Component ---
 function SnakeGame() {
   const [snake, setSnake] = useState([[8, 8]]);
-  const [food, setFood] = useState([
-    Math.floor(Math.random() * 16),
-    Math.floor(Math.random() * 16),
-  ]);
+  const [food, setFood] = useState([Math.floor(Math.random() * 16), Math.floor(Math.random() * 16)]);
   const [direction, setDirection] = useState([0, 1]);
+  const directionRef = React.useRef(direction);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
+
+  // Helper to generate a food position not on the snake
+  const generateFood = (snakeArr) => {
+    let newFood;
+    do {
+      newFood = [Math.floor(Math.random() * 16), Math.floor(Math.random() * 16)];
+    } while (snakeArr.some(([x, y]) => x === newFood[0] && y === newFood[1]));
+    return newFood;
+  };
+
+  React.useEffect(() => {
+    directionRef.current = direction;
+  }, [direction]);
 
   React.useEffect(() => {
     if (gameOver) return;
     const handleKey = (e) => {
       if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
         e.preventDefault();
-      }
-      switch (e.key) {
-        case 'ArrowUp': if (direction[1] !== 1) setDirection([-1, 0]); break;
-        case 'ArrowDown': if (direction[1] !== -1) setDirection([1, 0]); break;
-        case 'ArrowLeft': if (direction[0] !== 1) setDirection([0, -1]); break;
-        case 'ArrowRight': if (direction[0] !== -1) setDirection([0, 1]); break;
-        default: break;
+        let newDir = directionRef.current;
+        switch (e.key) {
+          case 'ArrowUp': if (newDir[1] !== 1) newDir = [-1, 0]; break;
+          case 'ArrowDown': if (newDir[1] !== -1) newDir = [1, 0]; break;
+          case 'ArrowLeft': if (newDir[0] !== 1) newDir = [0, -1]; break;
+          case 'ArrowRight': if (newDir[0] !== -1) newDir = [0, 1]; break;
+          default: break;
+        }
+        setDirection(newDir);
+        directionRef.current = newDir;
       }
     };
     window.addEventListener('keydown', handleKey, { passive: false });
     return () => window.removeEventListener('keydown', handleKey);
-  }, [direction, gameOver]);
+  }, [gameOver]);
 
   React.useEffect(() => {
     if (gameOver) return;
     const interval = setInterval(() => {
       setSnake((prev) => {
-        const newHead = [prev[0][0] + direction[0], prev[0][1] + direction[1]];
+        const dir = directionRef.current;
+        const newHead = [prev[0][0] + dir[0], prev[0][1] + dir[1]];
         // Check collision
         if (
           newHead[0] < 0 || newHead[0] > 15 ||
@@ -45,10 +60,8 @@ function SnakeGame() {
         }
         let newSnake = [newHead, ...prev];
         if (newHead[0] === food[0] && newHead[1] === food[1]) {
-          setFood([
-            Math.floor(Math.random() * 16),
-            Math.floor(Math.random() * 16),
-          ]);
+          const newFood = generateFood(newSnake);
+          setFood(newFood);
           setScore((s) => s + 1);
         } else {
           newSnake.pop();
@@ -57,26 +70,20 @@ function SnakeGame() {
       });
     }, 120);
     return () => clearInterval(interval);
-  }, [direction, food, gameOver]);
+  }, [food, gameOver]);
 
-  React.useEffect(() => {
-    if (gameOver) return;
-    // Avoid spawning food on the snake
-    if (snake.some(([x, y]) => x === food[0] && y === food[1])) {
-      setFood([
-        Math.floor(Math.random() * 16),
-        Math.floor(Math.random() * 16),
-      ]);
-    }
-  }, [food, snake, gameOver]);
+  // No longer needed: food is always generated off the snake
+
 
   const restart = () => {
     setSnake([[8, 8]]);
-    setFood([Math.floor(Math.random() * 16), Math.floor(Math.random() * 16)]);
+    setFood(generateFood([[8, 8]]));
     setDirection([0, 1]);
+    directionRef.current = [0, 1];
     setGameOver(false);
     setScore(0);
   };
+
 
   return (
     <div className="flex flex-col items-center">
