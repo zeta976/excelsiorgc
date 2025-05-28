@@ -2,7 +2,7 @@
 title: This is a Title
 author: Alejandro Zuluaga
 date: 2025-05-27T12:32:29.498Z
-section: News
+section: Noticias
 tags:
   - tag1
   - tag2
