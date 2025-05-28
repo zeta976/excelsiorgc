@@ -182,7 +182,7 @@ export default function Juegos() {
       <div className="bg-white rounded shadow p-4">
         {selected === 'snake' && <SnakeGame />}
         {selected === 'sudoku' && <SudokuGame />}
-        {selected === '2048' && <Game2048 />}
+        {selected === '2048' && <Game2048 selected={selected} />}
       </div>
     </main>
   );
@@ -190,7 +190,7 @@ export default function Juegos() {
 
 // --- Sudoku Game Component ---
 // --- 2048 Game Component ---
-function Game2048() {
+function Game2048({ selected }) {
   const size = 4;
   const [board, setBoard] = React.useState(() => addRandom(addRandom(Array(size).fill(0).map(() => Array(size).fill(0)))));
   const [score, setScore] = React.useState(0);
@@ -206,6 +206,7 @@ function Game2048() {
   React.useEffect(() => { wonRef.current = won; }, [won]);
 
   React.useEffect(() => {
+    if (selected !== '2048') return;
     const handleKey = (e) => {
       if (gameOverRef.current || wonRef.current) return;
       let moved = false;
@@ -231,7 +232,7 @@ function Game2048() {
     };
     window.addEventListener('keydown', handleKey, { passive: false });
     return () => window.removeEventListener('keydown', handleKey);
-  }, []);
+  }, [selected]);
 
   function reset() {
     setBoard(addRandom(addRandom(Array(size).fill(0).map(() => Array(size).fill(0)))));
