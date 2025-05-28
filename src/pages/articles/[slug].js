@@ -41,7 +41,7 @@ export default function ArticlePage({ frontmatter, contentHtml }) {
       <div className="border-t border-neutral-200 mb-8"></div>
       {frontmatter.section && (
         <div className="mb-2">
-          <span className="uppercase tracking-wide font-bold text-primary mr-2 text-sm">{frontmatter.section}</span>
+          <span className="uppercase tracking-wide font-bold text-primary mr-2 text-sm">{frontmatter.section.replace('Opinion','Opinión').replace('Sports','Deportes').replace('News','Noticias')}</span>
         </div>
       )}
       <h1 className="text-4xl font-serif font-black mb-2 tracking-tight text-neutral-900">{frontmatter.title}</h1>

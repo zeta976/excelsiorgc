@@ -55,7 +55,7 @@ export async function getStaticProps() {
 export default function ArticlesIndex({ articles }) {
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-serif font-black mb-8 tracking-tight text-neutral-900">All Articles</h1>
+      <h1 className="text-4xl font-serif font-black mb-8 tracking-tight text-neutral-900">Todos los artículos</h1>
       <ul>
         {articles.map((article, idx) => (
           <React.Fragment key={article.slug}>
@@ -64,7 +64,7 @@ export default function ArticlesIndex({ articles }) {
                 {article.title}
               </Link>
               <div className="text-neutral-500 text-sm mb-2 mt-1">
-                {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
+                {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section.replace('Opinion','Opinión').replace('Sports','Deportes').replace('News','Noticias')}</span>}
                 {article.author && <span>By {article.author} | </span>}
                 {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
               </div>

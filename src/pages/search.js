@@ -56,12 +56,12 @@ export default function SearchPage({ articles }) {
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-serif font-black mb-8 tracking-tight text-neutral-900">Search Results</h1>
+      <h1 className="text-3xl font-serif font-black mb-8 tracking-tight text-neutral-900">Resultados de Búsqueda</h1>
       {query && (
-        <div className="mb-6 text-neutral-500 text-base">Results for: <span className="font-semibold text-neutral-800">{router.query.q}</span></div>
+        <div className="mb-6 text-neutral-500 text-base">Resultados para: <span className="font-semibold text-neutral-800">{router.query.q}</span></div>
       )}
       {filtered.length === 0 ? (
-        <div className="text-neutral-500">No articles found.</div>
+        <div className="text-neutral-500">No se encontraron artículos.</div>
       ) : (
         <ul>
           {filtered.map(article => (
@@ -72,7 +72,7 @@ export default function SearchPage({ articles }) {
               </Link>
               <div className="text-neutral-500 text-sm mb-2 mt-1">
                 {article.section && <span className="uppercase tracking-wide font-bold text-primary mr-2">{article.section}</span>}
-                {article.author && <span>By {article.author} | </span>}
+                {article.author && <span>Por {article.author} | </span>}
                 {article.date && <span>{new Date(article.date).toLocaleDateString()}</span>}
               </div>
               <div className="mb-2 text-neutral-800 text-base prose max-w-none" dangerouslySetInnerHTML={{ __html: article.excerptHtml }} />

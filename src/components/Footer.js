@@ -8,7 +8,7 @@ export default function Footer() {
           <Image src="/gc.png" alt="School Logo" width={200} height={200} className="object-contain" />
         </div>
         <div className="text-neutral-500 text-sm text-center">
-          &copy; {new Date().getFullYear()} Gimnasio Campestre. Todos los derechos reservados.
+          &copy; {new Date().getFullYear()} Periódico El Excelsior. Todos los derechos reservados.
         </div>
       </div>
     </footer>

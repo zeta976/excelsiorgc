@@ -83,7 +83,7 @@ export default function SectionPage({ section, articles }) {
       <div className="mb-8">
         <AdSlot position="section-banner" />
       </div>
-      <h2 className="text-2xl font-serif font-bold mb-6 text-neutral-900 capitalize">{section} Articles</h2>
+      <h2 className="text-2xl font-serif font-bold mb-6 text-neutral-900 capitalize">Artículos de {section.replace('Opinion','Opinión').replace('Sports','Deportes').replace('News','Noticias')}</h2>
       <ul>
         {articles.map(article => (
           <li key={article.slug} className="mb-10 border-b border-neutral-200 pb-8">
@@ -110,7 +110,7 @@ export default function SectionPage({ section, articles }) {
           </li>
         ))}
         {articles.length === 0 && (
-          <li>No articles found in this section.</li>
+          <li>No se encontraron artículos en esta sección.</li>
         )}
       </ul>
     </main>

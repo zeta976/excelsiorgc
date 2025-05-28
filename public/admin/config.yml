@@ -13,10 +13,10 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Title", name: "title", widget: "string"}
-      - {label: "Author", name: "author", widget: "string"}
-      - {label: "Date", name: "date", widget: "datetime"}
-      - {label: "Section", name: "section", widget: "select", options: ["Opinion", "Humor", "Sports", "News"]}
-      - {label: "Tags", name: "tags", widget: "list"}
-      - {label: "Featured Image", name: "featured_image", widget: "image"}
-      - {label: "Body", name: "body", widget: "markdown"}
+      - {label: "Título", name: "title", widget: "string"}
+      - {label: "Autor", name: "author", widget: "string"}
+      - {label: "Fecha", name: "date", widget: "datetime"}
+      - {label: "Sección", name: "section", widget: "select", options: ["Opinión", "Humor", "Deportes", "Noticias"]}
+      - {label: "Etiquetas", name: "tags", widget: "list"}
+      - {label: "Imagen destacada", name: "featured_image", widget: "image"}
+      - {label: "Cuerpo", name: "body", widget: "markdown"}
