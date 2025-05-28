@@ -197,11 +197,19 @@ function Game2048() {
   const [gameOver, setGameOver] = React.useState(false);
   const [won, setWon] = React.useState(false);
 
+  // Use a ref to always get the latest state in the event handler
+  const boardRef = React.useRef(board);
+  const gameOverRef = React.useRef(gameOver);
+  const wonRef = React.useRef(won);
+  React.useEffect(() => { boardRef.current = board; }, [board]);
+  React.useEffect(() => { gameOverRef.current = gameOver; }, [gameOver]);
+  React.useEffect(() => { wonRef.current = won; }, [won]);
+
   React.useEffect(() => {
     const handleKey = (e) => {
-      if (gameOver || won) return;
+      if (gameOverRef.current || wonRef.current) return;
       let moved = false;
-      let newBoard = board.map(row => [...row]);
+      let newBoard = boardRef.current.map(row => [...row]);
       let points = 0;
       if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
         e.preventDefault();
@@ -223,7 +231,7 @@ function Game2048() {
     };
     window.addEventListener('keydown', handleKey, { passive: false });
     return () => window.removeEventListener('keydown', handleKey);
-  }, [board, gameOver, won]);
+  }, []);
 
   function reset() {
     setBoard(addRandom(addRandom(Array(size).fill(0).map(() => Array(size).fill(0)))));
