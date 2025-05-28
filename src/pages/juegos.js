@@ -212,11 +212,15 @@ function MinesweeperGame() {
   function plantMines(board, firstRow, firstCol) {
     let placed = 0;
     const newBoard = board.map(row => row.map(cell => ({ ...cell })));
+    // Avoid placing mines in the 3x3 area around the first click
+    function isSafeZone(r, c) {
+      return Math.abs(r - firstRow) <= 1 && Math.abs(c - firstCol) <= 1;
+    }
     while (placed < MINES) {
       const r = Math.floor(Math.random() * ROWS);
       const c = Math.floor(Math.random() * COLS);
-      // Don't plant on the first click or on an already mined cell
-      if ((r === firstRow && c === firstCol) || newBoard[r][c].mine) continue;
+      // Don't plant on the first click or in the 3x3 safe zone or on an already mined cell
+      if (isSafeZone(r, c) || newBoard[r][c].mine) continue;
       newBoard[r][c].mine = true;
       placed++;
     }
