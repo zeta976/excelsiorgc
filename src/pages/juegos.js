@@ -206,7 +206,7 @@ export default function Juegos() {
 // --- 2048 Game Component ---
 // --- Minesweeper (Buscaminas) Game Component ---
 function MinesweeperGame() {
-  const ROWS = 9, COLS = 9, MINES = 10;
+  const ROWS = 14, COLS = 18, MINES = 40;
   const createEmptyBoard = () => Array(ROWS).fill(null).map(() => Array(COLS).fill({ revealed: false, mine: false, flag: false, adjacent: 0 }));
 
   function plantMines(board, firstRow, firstCol) {
@@ -293,12 +293,12 @@ function MinesweeperGame() {
   }
 
   function checkWin(bd) {
-    let revealedCount = 0, correctFlags = 0;
+    let revealedCount = 0;
     for (let i = 0; i < ROWS; i++) for (let j = 0; j < COLS; j++) {
       if (bd[i][j].revealed) revealedCount++;
-      if (bd[i][j].flag && bd[i][j].mine) correctFlags++;
     }
-    if (revealedCount + MINES === ROWS * COLS || correctFlags === MINES) setWon(true);
+    // Win if all non-mine cells are revealed
+    if (revealedCount === ROWS * COLS - MINES) setWon(true);
   }
 
   function reset() {
@@ -313,7 +313,7 @@ function MinesweeperGame() {
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-bold mb-2">Buscaminas</h2>
       <div className="mb-2 text-base">Minas: <span className="font-bold">{MINES}</span> | Banderas: <span className="font-bold">{flags}</span></div>
-      <div className="grid grid-cols-9 gap-1 bg-green-100 p-2 rounded select-none">
+      <div className="grid grid-cols-18 gap-1 bg-green-100 p-2 rounded select-none">
         {board.map((row, i) =>
           row.map((cell, j) => (
             <button
