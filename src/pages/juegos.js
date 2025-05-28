@@ -14,6 +14,9 @@ function SnakeGame() {
   React.useEffect(() => {
     if (gameOver) return;
     const handleKey = (e) => {
+      if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+      }
       switch (e.key) {
         case 'ArrowUp': if (direction[1] !== 1) setDirection([-1, 0]); break;
         case 'ArrowDown': if (direction[1] !== -1) setDirection([1, 0]); break;
@@ -22,7 +25,7 @@ function SnakeGame() {
         default: break;
       }
     };
-    window.addEventListener('keydown', handleKey);
+    window.addEventListener('keydown', handleKey, { passive: false });
     return () => window.removeEventListener('keydown', handleKey);
   }, [direction, gameOver]);
 
@@ -80,12 +83,15 @@ function SnakeGame() {
       <h2 className="text-xl font-bold mb-2">Serpiente (Snake)</h2>
       <div
         className="grid"
+        tabIndex={0}
         style={{
+          outline: 'none',
           gridTemplateRows: `repeat(16, 20px)`,
           gridTemplateColumns: `repeat(16, 20px)`,
           border: '2px solid #888',
           background: '#f8fafc',
         }}
+        aria-label="Área del juego de la serpiente"
       >
         {[...Array(16 * 16)].map((_, idx) => {
           const x = Math.floor(idx / 16);
