@@ -280,8 +280,9 @@ function Game2048({ selected }) {
       newBd = transpose(newBd);
       for (let i=0; i<size; i++) {
         let row = compress(newBd[i]);
-        let merged; [merged, p] = merge(row);
-        points += p;
+        let merged, pointsThisRow;
+        [merged, pointsThisRow] = merge(row);
+        points += pointsThisRow;
         row = compress(merged);
         if (!arraysEqual(row, newBd[i])) moved = true;
         newBd[i] = row;
@@ -292,8 +293,9 @@ function Game2048({ selected }) {
       newBd = reverse(newBd);
       for (let i=0; i<size; i++) {
         let row = compress(newBd[i]);
-        let merged; [merged, p] = merge(row);
-        points += p;
+        let merged, pointsThisRow;
+        [merged, pointsThisRow] = merge(row);
+        points += pointsThisRow;
         row = compress(merged);
         if (!arraysEqual(row, newBd[i])) moved = true;
         newBd[i] = row;
@@ -303,8 +305,9 @@ function Game2048({ selected }) {
     } else if (dir === 'left') {
       for (let i=0; i<size; i++) {
         let row = compress(newBd[i]);
-        let merged; [merged, p] = merge(row);
-        points += p;
+        let merged, pointsThisRow;
+        [merged, pointsThisRow] = merge(row);
+        points += pointsThisRow;
         row = compress(merged);
         if (!arraysEqual(row, newBd[i])) moved = true;
         newBd[i] = row;
@@ -313,8 +316,9 @@ function Game2048({ selected }) {
       newBd = reverse(newBd);
       for (let i=0; i<size; i++) {
         let row = compress(newBd[i]);
-        let merged; [merged, p] = merge(row);
-        points += p;
+        let merged, pointsThisRow;
+        [merged, pointsThisRow] = merge(row);
+        points += pointsThisRow;
         row = compress(merged);
         if (!arraysEqual(row, newBd[i])) moved = true;
         newBd[i] = row;
