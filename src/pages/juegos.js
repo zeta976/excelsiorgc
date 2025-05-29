@@ -648,6 +648,9 @@ function SudokuGame() {
   const [annotationMode, setAnnotationMode] = React.useState(false);
   const [message, setMessage] = React.useState("");
 
+  // Always use the current puzzle as the initial grid
+  const initial = puzzles[puzzleIdx];
+
   // Check if a value is valid in its position
   function isValid(grid, row, col, val) {
     for (let i = 0; i < 9; i++) {
