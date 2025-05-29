@@ -767,42 +767,33 @@ function SudokuGame() {
               >
                 {isFixed ? (
                   <span className="absolute inset-0 flex items-center justify-center select-none">{initial[i][j]}</span>
-                ) : cell !== 0 ? (
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    className="w-full h-full text-center text-lg bg-white outline-none"
-                    value={cell === 0 ? "" : cell}
-                    onChange={e => handleCellInput(i, j, e)}
-                    onKeyDown={e => {
-                      if (e.key === 'Backspace' || e.key === 'Delete') {
-                        e.preventDefault();
-                        handleCellClear(i, j);
-                      }
-                    }}
-                  />
-                ) : notes[i][j] && notes[i][j].size > 0 ? (
-                  <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-[0.5rem] text-neutral-500 select-none pointer-events-none" style={{lineHeight:'1'}}>
-                    {[1,2,3,4,5,6,7,8,9].map(n => (
-                      <span key={n} className="flex items-center justify-center" style={{opacity: notes[i][j].has(n) ? 1 : 0.15}}>{n}</span>
-                    ))}
-                  </div>
                 ) : (
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    className="w-full h-full text-center text-lg bg-white outline-none"
-                    value={""}
-                    onChange={e => handleCellInput(i, j, e)}
-                    onKeyDown={e => {
-                      if (e.key === 'Backspace' || e.key === 'Delete') {
-                        e.preventDefault();
-                        handleCellClear(i, j);
-                      }
-                    }}
-                  />
+                  <>
+                    {/* Annotation overlay (background, does not block input) */}
+                    {notes[i][j] && notes[i][j].size > 0 && (
+                      <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-[0.5rem] text-neutral-500 select-none pointer-events-none" style={{lineHeight:'1', zIndex:0}}>
+                        {[1,2,3,4,5,6,7,8,9].map(n => (
+                          <span key={n} className="flex items-center justify-center" style={{opacity: notes[i][j].has(n) ? 1 : 0.15}}>{n}</span>
+                        ))}
+                      </div>
+                    )}
+                    {/* Always show input for editable cells */}
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      className="w-full h-full text-center text-lg bg-white outline-none relative"
+                      style={{zIndex:1, background:'transparent'}}
+                      value={cell === 0 ? "" : cell}
+                      onChange={e => handleCellInput(i, j, e)}
+                      onKeyDown={e => {
+                        if (e.key === 'Backspace' || e.key === 'Delete') {
+                          e.preventDefault();
+                          handleCellClear(i, j);
+                        }
+                      }}
+                    />
+                  </>
                 )}
               </div>
             );
