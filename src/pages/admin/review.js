@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 function fetchPendingArticles() {
-  return fetch('/api/pending-articles').then(res => res.json());
+  return fetch('/.netlify/functions/pending-articles').then(res => res.json());
 }
 
 function updateArticle(id, action, password) {
-  return fetch('/api/review-article', {
+  return fetch('/.netlify/functions/review-article', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, action, password })
