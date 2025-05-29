@@ -595,19 +595,57 @@ function Game2048({ selected }) {
 }
 
 function SudokuGame() {
-  // Example easy puzzle (0 = empty)
-  const initial = [
-    [5,3,0,0,7,0,0,0,0],
-    [6,0,0,1,9,5,0,0,0],
-    [0,9,8,0,0,0,0,6,0],
-    [8,0,0,0,6,0,0,0,3],
-    [4,0,0,8,0,3,0,0,1],
-    [7,0,0,0,2,0,0,0,6],
-    [0,6,0,0,0,0,2,8,0],
-    [0,0,0,4,1,9,0,0,5],
-    [0,0,0,0,8,0,0,7,9],
+  // Multiple Sudoku puzzles (0 = empty)
+  const puzzles = [
+    [
+      [5,3,0,0,7,0,0,0,0],
+      [6,0,0,1,9,5,0,0,0],
+      [0,9,8,0,0,0,0,6,0],
+      [8,0,0,0,6,0,0,0,3],
+      [4,0,0,8,0,3,0,0,1],
+      [7,0,0,0,2,0,0,0,6],
+      [0,6,0,0,0,0,2,8,0],
+      [0,0,0,4,1,9,0,0,5],
+      [0,0,0,0,8,0,0,7,9],
+    ],
+    [
+      [0,2,0,6,0,8,0,0,0],
+      [5,8,0,0,0,9,7,0,0],
+      [0,0,0,0,4,0,0,0,0],
+      [3,7,0,0,0,0,5,0,0],
+      [6,0,0,0,0,0,0,0,4],
+      [0,0,8,0,0,0,0,1,3],
+      [0,0,0,0,2,0,0,0,0],
+      [0,0,9,8,0,0,0,3,6],
+      [0,0,0,3,0,6,0,9,0],
+    ],
+    [
+      [0,0,0,0,0,0,2,0,0],
+      [0,8,0,0,0,7,0,9,0],
+      [6,0,2,0,0,0,5,0,0],
+      [0,7,0,0,6,0,0,0,0],
+      [0,0,0,9,0,1,0,0,0],
+      [0,0,0,0,2,0,0,4,0],
+      [0,0,5,0,0,0,6,0,3],
+      [0,9,0,4,0,0,0,7,0],
+      [0,0,6,0,0,0,0,0,0],
+    ],
+    [
+      [1,0,0,0,0,7,0,9,0],
+      [0,3,0,0,2,0,0,0,8],
+      [0,0,9,6,0,0,5,0,0],
+      [0,0,5,3,0,0,9,0,0],
+      [0,1,0,0,8,0,0,0,2],
+      [6,0,0,0,0,4,0,0,0],
+      [3,0,0,0,0,0,0,1,0],
+      [0,4,1,0,0,0,0,0,7],
+      [0,0,7,0,0,0,3,0,0],
+    ]
   ];
-  const [grid, setGrid] = React.useState(initial.map(row => [...row]));
+  const [puzzleIdx, setPuzzleIdx] = React.useState(() => Math.floor(Math.random() * puzzles.length));
+  const [grid, setGrid] = React.useState(puzzles[puzzleIdx].map(row => [...row]));
+  const [notes, setNotes] = React.useState(() => Array(9).fill(0).map(() => Array(9).fill(null).map(() => new Set())));
+  const [annotationMode, setAnnotationMode] = React.useState(false);
   const [message, setMessage] = React.useState("");
 
   // Check if a value is valid in its position
@@ -624,18 +662,60 @@ function SudokuGame() {
     return true;
   }
 
-  // Handle user input
-  function handleChange(row, col, e) {
+  // Handle user input (number entry or annotation)
+  function handleCellInput(row, col, e) {
     let val = e.target.value;
     if (val === "") val = 0;
     else val = parseInt(val);
-    if (isNaN(val) || val < 0 || val > 9) return;
+    if (isNaN(val) || val < 1 || val > 9) return;
     // Only allow editing empty cells
     if (initial[row][col] !== 0) return;
-    const newGrid = grid.map(r => [...r]);
-    newGrid[row][col] = val;
-    setGrid(newGrid);
-    setMessage("");
+    if (annotationMode) {
+      // Toggle annotation for this number
+      setNotes(prev => {
+        const newNotes = prev.map(r => r.map(s => new Set(s)));
+        if (newNotes[row][col].has(val)) {
+          newNotes[row][col].delete(val);
+        } else {
+          newNotes[row][col].add(val);
+        }
+        return newNotes;
+      });
+    } else {
+      const newGrid = grid.map(r => [...r]);
+      newGrid[row][col] = val;
+      setGrid(newGrid);
+      // Clear notes for this cell
+      setNotes(prev => {
+        const newNotes = prev.map(r => r.map(s => new Set(s)));
+        newNotes[row][col] = new Set();
+        return newNotes;
+      });
+      setMessage("");
+    }
+  }
+
+  // Handle cell clear (delete/backspace)
+  function handleCellClear(row, col) {
+    if (initial[row][col] !== 0) return;
+    if (annotationMode) {
+      setNotes(prev => {
+        const newNotes = prev.map(r => r.map(s => new Set(s)));
+        newNotes[row][col] = new Set();
+        return newNotes;
+      });
+    } else {
+      setGrid(prev => {
+        const newGrid = prev.map(r => [...r]);
+        newGrid[row][col] = 0;
+        return newGrid;
+      });
+      setNotes(prev => {
+        const newNotes = prev.map(r => r.map(s => new Set(s)));
+        newNotes[row][col] = new Set();
+        return newNotes;
+      });
+    }
   }
 
   // Check solution
@@ -654,27 +734,76 @@ function SudokuGame() {
 
   // Reset puzzle
   function reset() {
-    setGrid(initial.map(row => [...row]));
+    const idx = Math.floor(Math.random() * puzzles.length);
+    setPuzzleIdx(idx);
+    setGrid(puzzles[idx].map(row => [...row]));
+    setNotes(Array(9).fill(0).map(() => Array(9).fill(null).map(() => new Set())));
     setMessage("");
   }
 
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-bold mb-2">Sudoku</h2>
+      <div className="flex gap-2 mb-2">
+        <button
+          className={`px-3 py-1 rounded ${annotationMode ? 'bg-yellow-400 text-black font-bold' : 'bg-neutral-200 text-neutral-700'}`}
+          onClick={() => setAnnotationMode(a => !a)}
+        >
+          {annotationMode ? 'Modo anotación (activo)' : 'Modo anotación'}
+        </button>
+      </div>
       <div className="grid grid-cols-9 gap-0.5 bg-neutral-300 p-1 rounded">
         {grid.map((row, i) =>
-          row.map((cell, j) => (
-            <input
-              key={i+"-"+j}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              className={`w-8 h-8 text-center text-lg border ${initial[i][j]!==0 ? 'bg-neutral-200 font-bold' : 'bg-white'} ${((i+1)%3===0 && i!==8 ? 'border-b-2 border-neutral-500' : '')} ${((j+1)%3===0 && j!==8 ? 'border-r-2 border-neutral-500' : '')}`}
-              value={cell === 0 ? "" : cell}
-              onChange={e => handleChange(i,j,e)}
-              disabled={initial[i][j] !== 0}
-            />
-          ))
+          row.map((cell, j) => {
+            const isFixed = initial[i][j] !== 0;
+            return (
+              <div
+                key={i+"-"+j}
+                className={`relative w-8 h-8 border ${isFixed ? 'bg-neutral-200 font-bold' : 'bg-white'} ${((i+1)%3===0 && i!==8 ? 'border-b-2 border-neutral-500' : '')} ${((j+1)%3===0 && j!==8 ? 'border-r-2 border-neutral-500' : '')}`}
+                style={{fontSize: isFixed ? '1.1rem' : '1rem'}}
+              >
+                {isFixed ? (
+                  <span className="absolute inset-0 flex items-center justify-center select-none">{initial[i][j]}</span>
+                ) : cell !== 0 ? (
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    className="w-full h-full text-center text-lg bg-white outline-none"
+                    value={cell === 0 ? "" : cell}
+                    onChange={e => handleCellInput(i, j, e)}
+                    onKeyDown={e => {
+                      if (e.key === 'Backspace' || e.key === 'Delete') {
+                        e.preventDefault();
+                        handleCellClear(i, j);
+                      }
+                    }}
+                  />
+                ) : notes[i][j] && notes[i][j].size > 0 ? (
+                  <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-[0.5rem] text-neutral-500 select-none pointer-events-none" style={{lineHeight:'1'}}>
+                    {[1,2,3,4,5,6,7,8,9].map(n => (
+                      <span key={n} className="flex items-center justify-center" style={{opacity: notes[i][j].has(n) ? 1 : 0.15}}>{n}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    className="w-full h-full text-center text-lg bg-white outline-none"
+                    value={""}
+                    onChange={e => handleCellInput(i, j, e)}
+                    onKeyDown={e => {
+                      if (e.key === 'Backspace' || e.key === 'Delete') {
+                        e.preventDefault();
+                        handleCellClear(i, j);
+                      }
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })
         )}
       </div>
       <div className="flex gap-2 mt-4">
@@ -682,7 +811,10 @@ function SudokuGame() {
         <button className="px-3 py-1 bg-neutral-400 text-white rounded" onClick={reset}>Reiniciar</button>
       </div>
       {message && <div className="mt-2 text-base font-semibold text-blue-700">{message}</div>}
-      <div className="mt-2 text-xs text-neutral-500">Llena la cuadrícula con números del 1 al 9. Cada fila, columna y subcuadro 3x3 debe contener todos los números del 1 al 9 sin repetir.</div>
+      <div className="mt-2 text-xs text-neutral-500">
+        Llena la cuadrícula con números del 1 al 9. Cada fila, columna y subcuadro 3x3 debe contener todos los números del 1 al 9 sin repetir.<br/>
+        Puedes activar el <b>Modo anotación</b> para agregar pequeños números en las celdas como ayuda.
+      </div>
     </div>
   );
 }
