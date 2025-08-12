@@ -43,7 +43,12 @@ export async function getStaticProps() {
         };
       })
   );
-  articles.sort((a, b) => (a.date < b.date ? 1 : -1));
+  // Fix sorting to properly compare dates and show latest first
+  articles.sort((a, b) => {
+    const dateA = a.date ? new Date(a.date) : new Date(0);
+    const dateB = b.date ? new Date(b.date) : new Date(0);
+    return dateB - dateA;  // Latest first
+  });
 
   return {
     props: {
