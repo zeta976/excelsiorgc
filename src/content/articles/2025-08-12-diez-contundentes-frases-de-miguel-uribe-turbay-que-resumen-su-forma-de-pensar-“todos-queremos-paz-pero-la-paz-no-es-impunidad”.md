@@ -3,7 +3,7 @@ title: "Diez contundentes frases de Miguel Uribe Turbay que resumen su forma de
   pensar: “Todos queremos paz, pero la paz no es impunidad”"
 author: Zeta Esta
 date: 2025-08-12T15:05:12.567Z
-section: Deportes
+section: Humor
 tags:
   - Fútbol
 featured_image: /uploads/output.png
