@@ -25,3 +25,12 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Increase vertical spacing between paragraphs in articles */
+.prose p {
+  margin-bottom: 1.5em; /* Increased from default */
+}
+
+.prose p + p {
+  margin-top: 0.8em; /* Additional spacing between consecutive paragraphs */
+}
